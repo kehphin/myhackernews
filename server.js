@@ -1,13 +1,17 @@
 var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
-var multer = require('multer'); 
+var multer = require('multer');
 var passport      = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var cookieParser  = require('cookie-parser');
 var session       = require('express-session');
 var mongoose      = require('mongoose');
-var db = mongoose.connect('mongodb://localhost/test');
+
+var connectionString = process.env.OPENSHIFT_MONGODB_DB_URL || 'mongodb://localhost/test';
+var ip = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1';
+var port = process.env.OPENSHIFT_NODEJS_PORT || 3000;
+var db = mongoose.connect(connectionString);
 
 var UserSchema = new mongoose.Schema({
     username: String,
@@ -73,12 +77,12 @@ app.get('/loggedin', function(req, res)
 {
     res.send(req.isAuthenticated() ? req.user : '0');
 });
-    
+
 app.post('/logout', function(req, res)
 {
     req.logOut();
     res.send(200);
-});     
+});
 
 app.post('/register', function(req, res)
 {
@@ -160,4 +164,4 @@ app.post("/rest/user", auth, function(req, res){
     });
 });
 
-app.listen(3000);
+app.listen(port, ip);
