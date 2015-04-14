@@ -14,16 +14,40 @@ var port = process.env.OPENSHIFT_NODEJS_PORT || 3000;
 
 var db = mongoose.connect(connectionString);
 
+////////////////////////////////////////////////
+// MODELS
+////////////////////////////////////////////////
 var UserSchema = new mongoose.Schema({
-    username: String,
-    password: String,
-    firstName: String,
-    lastName: String,
-    email: String,
-    roles: [String]
+    username: {type: String, required: true},
+    password: {type: String, required: true},
+    following: [String],
+    favorites: [String]
+    });
+
+var User = mongoose.model('User', UserSchema);
+
+var ArticleSchema = new mongoose.Schema({
+	HNId: {type: String, unique: true, required: true},
+	author: {type: String},
+	dateCreated: {type: String},
+	title: {type: String, required: true},
+	url: {type: String, required: true}
+	
 });
 
-var UserModel = mongoose.model('UserModel', UserSchema);
+var Article = mongoose.model('Article', ArticleSchema);
+
+//making comments its own collection because will be a lot easier
+//to edit and delete comments when they have an _id than by updating
+//them in a set embedded in an article 
+var CommentSchema = new mongoose.Schema({
+	poster: {type: String, required: true},
+	text: {type: String, required: true},
+	dateCreated: {type: Date, default: Date.now},
+	article: {type: String, required: true}
+});
+
+var Comment = mongoose.model('Comment', CommentSchema);
 
 
 app.use(bodyParser.json()); // for parsing application/json
@@ -35,28 +59,10 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use(express.static(__dirname + '/public'));
-app.get("/test", function(req, res)
-		{
-		    res.json({message: "Hello World."});
-		});
-
-//var users =
-//[
-//    {username: 'alice', password: 'alice', firstName: 'Alice', lastName: 'Wonderland', roles: ['admin', 'student', 'instructor']},
-//    {username: 'bob', password: 'bob', firstName: 'Bob', lastName: 'Marley', roles: ['student']},
-//    {username: 'charlie', password: 'charlie', firstName: 'Charlie', lastName: 'Brown', roles: ['instructor']}
-//];
 
 passport.use(new LocalStrategy(
 function(username, password, done)
 {
-//    for(var u in users)
-//    {
-//        if(username == users[u].username && password == users[u].password)
-//        {
-//            return done(null, users[u]);
-//        }
-//    }
     UserModel.findOne({username: username, password: password}, function(err, user)
     {
         if (err) { return done(err); }
