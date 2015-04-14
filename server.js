@@ -11,6 +11,7 @@ var mongoose      = require('mongoose');
 var connectionString = process.env.OPENSHIFT_MONGODB_DB_URL || 'mongodb://localhost/test';
 var ip = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1';
 var port = process.env.OPENSHIFT_NODEJS_PORT || 3000;
+/*
 var db = mongoose.connect(connectionString);
 
 var UserSchema = new mongoose.Schema({
@@ -23,6 +24,7 @@ var UserSchema = new mongoose.Schema({
 });
 
 var UserModel = mongoose.model('UserModel', UserSchema);
+*/
 
 app.use(bodyParser.json()); // for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
@@ -40,7 +42,7 @@ app.use(express.static(__dirname + '/public'));
 //    {username: 'bob', password: 'bob', firstName: 'Bob', lastName: 'Marley', roles: ['student']},
 //    {username: 'charlie', password: 'charlie', firstName: 'Charlie', lastName: 'Brown', roles: ['instructor']}
 //];
-
+/*
 passport.use(new LocalStrategy(
 function(username, password, done)
 {
@@ -163,5 +165,6 @@ app.post("/rest/user", auth, function(req, res){
         }
     });
 });
+*/
 
 app.listen(port, ip);
