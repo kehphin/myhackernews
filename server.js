@@ -318,6 +318,9 @@ app.post("/user/:username/favorite/:articleId", function(req, res) {
 	        if(err) {
 		    	res.status(500).end();
 		    	return;
+		    } else if(!modified.n) {
+		    	res.status(404).end();
+		    	return;
 		    }
 		    res.status(200).end();
 	    });
@@ -341,6 +344,17 @@ app.delete("/user/:username/favorite/:articleid", function(req, res) {
 			 return;
 	});
 });
+
+//given an article id this will return a list of all users that have favorited the article
+app.get("/article/:articleid/usersFavorited", function(req, res) {
+	User.find({favorites: req.params.articleid}, {username: 1, _id: 0}, function(err, users) {
+		if(err) {
+			res.status(500).end();
+			return;
+		}
+		res.json({users: users});
+	})
+})
 
 
 ////////////////////////////////////////////////
