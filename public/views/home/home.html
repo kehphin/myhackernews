@@ -1,3 +1,47 @@
-<h1>Home</h1>
+<h1>MyHackerNews</h1>
 
-{{currentUser}}
+<h1>Top 20 HN Articles</h1>
+
+<div ng-show="favorites.length > 0">
+    <h2>Favorites</h2>
+    <table class="table table-striped">
+        <tbody>
+            <tr ng-repeat="story in favorites">
+                <td>{{story.title}}</td>
+                <td>
+                    <button class="btn btn-danger pull-right">
+                        <span class="glyphicon glyphicon-star-empty"></span>
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<table class="table table-striped" ng-init="init()">
+    <tbody>
+        <tr>
+          <th>Points</th>
+          <th>Title</th>
+          <th>By</th>
+          <th>Url</th>
+          <th></th>
+        </tr>
+        <tr ng-repeat="story in stories">
+            <td>{{story.score}}</td>
+            <td>{{story.title}}</td>
+            <td>{{story.by}}</td>
+            <td>
+              <a ng-href="{{story.url}}">{{story.url}}</a>
+            </td>
+            <td>
+                <button ng-click="addToFavorites(story)" class="btn btn-warning">
+                    <span class="glyphicon glyphicon-star"></span>
+                </button>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+  {{stories}}
+

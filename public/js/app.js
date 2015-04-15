@@ -1,10 +1,11 @@
 
-var app = angular.module("PassportApp", ["ngRoute"]);
+var app = angular.module("MyHackerNewsApp", ["ngRoute"]);
 
 app.config(function($routeProvider, $httpProvider) {
     $routeProvider
       .when('/home', {
-          templateUrl: 'views/home/home.html'
+          templateUrl: 'views/home/home.html',
+          controller: 'HomeCtrl',
       })
       .when('/profile', {
           templateUrl: 'views/profile/profile.html',
@@ -24,6 +25,46 @@ app.config(function($routeProvider, $httpProvider) {
       .otherwise({
           redirectTo: '/home'
       });
+});
+
+app.factory('StoryService', function StoryService($q, $http) {
+
+    var favorites = [];
+
+    var getTopStories = function() {
+      var deferred = $q.defer();
+
+      $http.get("https://hacker-news.firebaseio.com/v0/topstories.json").success(function(json) {
+        var topStoryList = [];
+        for (var i=0; i<20; i++) {
+          $http.get("https://hacker-news.firebaseio.com/v0/item/" + json[i] + ".json").success(function(story) {
+            topStoryList.push(story);
+
+            if(topStoryList.length == 20) {
+              deferred.resolve(topStoryList);
+            }
+          });
+        }
+      });
+
+      return deferred.promise;
+    }
+
+    var addToFavorites = function(story)
+    {
+        favorites.push(story);
+    }
+
+    var getFavorites = function()
+    {
+        return favorites;
+    }
+
+    return {
+        getTopStories: getTopStories,
+        addToFavorites: addToFavorites,
+        getFavorites: getFavorites
+    };
 });
 
 var checkLoggedin = function($q, $timeout, $http, $location, $rootScope)
@@ -47,16 +88,6 @@ var checkLoggedin = function($q, $timeout, $http, $location, $rootScope)
             $location.url('/login');
         }
     });
-    
+
     return deferred.promise;
 };
-
-app.controller("NavCtrl", function($scope, $http, $location, $rootScope){
-    $scope.logout = function(){
-        $http.post("/logout")
-        .success(function(){
-            $rootScope.currentUser = null;
-            $location.url("/home");
-        });
-    };
-});

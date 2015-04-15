@@ -1,22 +1,23 @@
 {
-  "name": "OpenShift-Sample-App",
+  "name": "MyHackerNewsApp",
   "version": "1.0.0",
-  "description": "OpenShift Sample Application",
+  "description": "A Client Application for the Hacker News Newsource",
   "keywords": [
     "OpenShift",
     "Node.js",
     "application",
-    "openshift"
+    "openshift",
+    "hackernews"
   ],
   "author": {
-    "name": "OpenShift",
-    "email": "ramr@example.org",
+    "name": "Kevin Yang and Chris Flood",
+    "email": "yang.k@me.com",
     "url": "http://www.openshift.com/"
   },
-  "homepage": "http://www.openshift.com/",
+  "homepage": "http://myhackernews-kyang.rhcloud.com/",
   "repository": {
     "type": "git",
-    "url": "https://github.com/openshift/origin-server"
+    "url": "https://github.com/yangk/myhackernews"
   },
   "engines": {
     "node": ">= 0.6.0",
