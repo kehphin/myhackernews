@@ -167,8 +167,8 @@ app.post('/user', function(req, res)
     });
 });
 
-// get a list of all users, just for testing probably should take this out
-// TODO
+if(!process.env.OPENSHIFT_NODEJS_PORT) {
+// get a list of all users, just for testing locally
 app.get("/users", function(req, res)
 {
     User.find({}, {password: 0}, function(err, users)
@@ -176,6 +176,7 @@ app.get("/users", function(req, res)
         res.json(users);
     });
 });
+}
 
 // get a user by username
 app.get("/user/:username", function(req, res)
@@ -189,7 +190,37 @@ app.get("/user/:username", function(req, res)
     		res.status(404).end();
     		return;
     	}
-        res.json(user);
+    	//need to do a find for all HNId's in the favorited section
+    	//Mongoose has some control over when the object is stringified and since we want
+    	//to add the followers field on our own below we need to make a copy of the object
+    	var curUser = JSON.parse(JSON.stringify(user[0]));
+    	var complete = false;
+    	Article.find({HNId: { $in: curUser.favorites}}, function(err, articles) {
+    		if(err) {
+    			console.log("The error when looking by HNId for favorites is " + err);
+    			res.status(500).end();
+    			return;
+    		}
+    		curUser.favorites = articles;
+    		if(complete) {
+        		res.json(curUser);
+    		}
+    		complete = true;
+    		
+    	});
+    	User.find({following: curUser.username}, {username: 1, _id: 0}, function(err, users) {
+    		if(err) {
+    			console.log("An error when looking for number of followers for " + curUser.username);
+    			res.status(500).end();
+    			return;
+    		}
+    		curUser.followers = users.map(function(el) {return el.username;});
+    		if(complete) {
+    			res.json(curUser);
+    		}
+    		complete = true;
+    		
+    	})
     });
 });
 
