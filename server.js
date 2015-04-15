@@ -144,6 +144,22 @@ app.post('/api/logout', function(req, res)
 // //////////////////////////////////////////////
 
 // create a new user
+/* An example input JSON:
+{
+    "username":"chris",
+    "password":"foobar"
+}
+ */
+/* An example response JSON:
+{
+    "__v": 0,
+    "username": "chris",
+    "password": null,
+    "_id": "552edc222a9229800b7ee285",
+    "favorites": [],
+    "following": []
+} 
+ */
 app.post('/api/user', function(req, res)
 {
     var newUser = new User(req.body);
@@ -169,6 +185,31 @@ app.post('/api/user', function(req, res)
 
 if(!process.env.OPENSHIFT_NODEJS_PORT) {
 // get a list of all users, just for testing locally
+/* An example response JSON:
+ * [
+    {
+        "_id": "552dc8c706de35e41a298624",
+        "username": "cflood",
+        "__v": 0,
+        "favorites": [
+            "123",
+            "8863"
+        ],
+        "following": [
+            "cjf2xn"
+        ]
+    },
+    {
+        "_id": "552dde1a54d64e9815714af2",
+        "username": "flood.chr",
+        "__v": 0,
+        "favorites": [],
+        "following": [
+            "cflood"
+        ]
+    }
+]
+ */
 app.get("/api/users", function(req, res)
 {
     User.find({}, {password: 0}, function(err, users)
@@ -179,6 +220,39 @@ app.get("/api/users", function(req, res)
 }
 
 // get a user by username
+/* An example response JSON:
+{
+    "_id": "552dc8c706de35e41a298624",
+    "username": "cflood",
+    "__v": 0,
+    "favorites": [
+        {
+            "_id": "552dd4906458dbc8009c5bf9",
+            "author": "beau",
+            "HNId": "123",
+            "dateCreated": "1171923673",
+            "title": "Design Quotations: &#34;And if in fact you do know the e technology is obsolete.&#34;",
+            "url": "http://design.caltech.edu/erik/Misc/design_quotes.html",
+            "__v": 0
+        },
+        {
+            "_id": "552de3c2c8378da00fece2e4",
+            "author": "dhouston",
+            "HNId": "8863",
+            "title": "My YC app: Dropbox - Throw away your USB drive",
+            "url": "http://www.getdropbox.com/u/2/screencast.html",
+            "__v": 0
+        }
+    ],
+    "following": [
+        "cjf2xn"
+    ],
+    "followers": [
+        "flood.chr",
+        "cjf2xn"
+    ]
+}
+ */
 app.get("/api/user/:username", function(req, res)
 {
 	//{password: 0} tells mongo not to give us the password back in its return JSON
@@ -300,6 +374,15 @@ app.delete("/api/user/:username/follow/:tounfollow", function(req, res) {
 ////////////////////////////////////////////////
 
 //add a story to the favorites list of a user
+/* An example input JSON:
+{ 
+  "author": "beau",
+  "HNId": 123,
+  "dateCreated": 1171923673,
+  "title": "Design Quotations: &#34;And if in fact you do know the e technology is obsolete.&#34;",
+  "url": "http://design.caltech.edu/erik/Misc/design_quotes.html" 
+}
+ */
 app.post("/api/user/:username/favorite/:articleId", function(req, res) {
 
 	var toAdd = new Article(req.body);
@@ -347,6 +430,18 @@ app.delete("/api/user/:username/favorite/:articleid", function(req, res) {
 });
 
 //given an article id this will return a list of all users that have favorited the article
+/* An example response JSON:
+{
+    "users": [
+        {
+            "username": "cflood"
+        },
+        {
+            "username": "cjf2xn"
+        }
+    ]
+}
+ */
 app.get("/api/article/:articleid/usersFavorited", function(req, res) {
 	User.find({favorites: req.params.articleid}, {username: 1, _id: 0}, function(err, users) {
 		if(err) {
@@ -363,6 +458,25 @@ app.get("/api/article/:articleid/usersFavorited", function(req, res) {
 ////////////////////////////////////////////////
 
 //post a comment to a story
+/* An example input JSON:
+{ 
+  "article": {
+    "author":"dhouston",
+    "descendants":71,
+    "HNId":8863,
+    "score":111,
+    "time":1175714200,
+    "title":"My YC app: Dropbox - Throw away your USB drive",
+    "type":"story",
+    "url":"http://www.getdropbox.com/u/2/screencast.html"
+  },
+  "comment": {
+    "poster":"cjf2xn",
+    "article":"12",
+    "text":"This is another test comment."
+ }
+}
+ */
 app.post("/api/article/:articleid/comment", function(req, res) {
     // need to make sure the article exists first
     var toAdd = new Article(req.body.article);
@@ -387,6 +501,26 @@ app.post("/api/article/:articleid/comment", function(req, res) {
 });
 
 //get a list of all the comments for a story sorted by post time
+/* An example response JSON:
+[
+    {
+        "_id": "552e8f1a2cf60f0810778da1",
+        "poster": "cjf2xn",
+        "article": "12",
+        "text": "This is a test comment.",
+        "__v": 0,
+        "dateCreated": "2015-04-15T16:17:30.888Z"
+    },
+    {
+        "_id": "552edde02a9229800b7ee287",
+        "poster": "cjf2xn",
+        "article": "12",
+        "text": "This is another test comment.",
+        "__v": 0,
+        "dateCreated": "2015-04-15T21:53:36.072Z"
+    }
+]
+ */
 app.get("/api/article/:articleid/comments", function(req, res) {
 	Comment.find({article: req.params.articleid}).sort({dateCreated: 1}).exec(function(err, comments) {
 		if(err) {
