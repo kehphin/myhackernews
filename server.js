@@ -15,6 +15,7 @@ var port = process.env.OPENSHIFT_NODEJS_PORT || 3000;
 
 var db = mongoose.connect(connectionString);
 
+
 // //////////////////////////////////////////////
 // MODELS
 // //////////////////////////////////////////////
@@ -55,6 +56,11 @@ var Comment = mongoose.model('Comment', CommentSchema);
 // Configure Express
 // //////////////////////////////////////////////
 
+function logRequestBody(req, res, next) {
+	console.log(req.method + ' path=' + req.originalUrl + ' body=' + JSON.stringify(req.body));
+	next();
+}
+
 app.use(bodyParser.json()); // for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true })); // for parsing
 													// application/x-www-form-urlencoded
@@ -63,7 +69,7 @@ app.use(session({ secret: 'this is the secret' }));
 app.use(cookieParser())
 app.use(passport.initialize());
 app.use(passport.session());
-
+app.use(logRequestBody);
 app.use(express.static(__dirname + '/public'));
 
 
