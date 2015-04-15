@@ -97,7 +97,7 @@ passport.deserializeUser(function(user, done) {
 var auth = function(req, res, next)
 {
     if (!req.isAuthenticated())
-        res.send(401);
+        res.status(401).end();
     else
         next();
 };
@@ -204,6 +204,17 @@ app.delete("/user/:username", auth, function(req, res){
     		return;
     	}
     	res.status(200).end();
+    	//now we want to go remove this user from all other's follower lists
+    	User.update({following: req.params.username},
+			    { $pull: {following: req.params.username}},
+			    {multi: true},
+			    function(err, modified) {
+			 if(err) {
+				 console.log('An error occured when trying to remove a deleted user ' +
+						 'from the following list of others: ' + err);
+			 }
+			 return;
+	});
     });
 });
 
@@ -251,6 +262,48 @@ app.delete("/user/:username/favorite/:articleid", function(req, res) {
 	});
 }); 
 
+//add a user to the following list of a user
+app.post("/user/:username/follow/:tofollow", function(req, res) {
+	User.find({username: req.params.tofollow}, function(err, user) {
+		if(err) {
+			res.status(500).end();
+			return;
+		} else if(!user.length) {
+			res.status(404).end();
+			return;
+		}
+		//we found the user they want to add
+		User.update({username: req.params.username},
+                { $addToSet: {following: req.params.tofollow}},
+                function(err, modified) {
+            if(err) {
+	    	    res.status(500).end();
+	        	return;
+	        }
+	        res.status(200).end();
+        });
+	});
+});
 
+//remove a user from the following list of a user
+app.delete("/user/:username/follow/:tounfollow", function(req, res) {
+	//don't really care if the tounfollow person is a user or not
+	//if they aren't that might mean they deleted their account so could 
+	//be useful for logging
+	User.update({username: req.params.username},
+		        { $pull: {following: req.params.tounfollow}},
+		        function(err, modified) {
+		     if(err) {
+	    		 res.status(500).end();
+	    		 return;
+	    	 } else if(!modified.nModified) {
+	    		 //if nothing was modified then the tounfollow was never on the list
+	     		 res.status(404).end();
+	     		 return;
+	    	 }
+	    	 res.status(200).end();
+	    	 return;
+    });
+});
 
 app.listen(port, ip);
