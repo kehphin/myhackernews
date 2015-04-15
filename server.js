@@ -343,5 +343,59 @@ app.delete("/user/:username/favorite/:articleid", function(req, res) {
 });
 
 
+////////////////////////////////////////////////
+//Comment Endpoints
+////////////////////////////////////////////////
+
+//post a comment to a story
+app.post("/article/:articleid/comment", function(req, res) {
+    // need to make sure the article exists first
+    var toAdd = new Article(req.body.article);
+    // need to make sure we store the relevant info from the article in our DB
+    toAdd.save(function(err, article) {
+
+        // do not care about the error if it only occurs
+        // because the item already exists, this is fine
+        if(err && err.message.indexOf('duplicate key error') == -1) {
+            res.status(500).end();
+            return;
+        }
+        var newComment = new Comment(req.body.comment);
+        newComment.save(function(err, comment) {
+            if(err) {
+                res.status(500).end();
+                return;
+            }
+            res.status(200).end();
+        });
+    });
+});
+
+//get a list of all the comments for a story sorted by post time
+app.get("/article/:articleid/comments", function(req, res) {
+	Comment.find({article: req.params.articleid}).sort({dateCreated: 1}).exec(function(err, comments) {
+		if(err) {
+			res.status(500).end();
+			return;
+		}
+		res.json(comments);
+		return;
+	});
+});
+
+//delete a comment given its _id
+app.delete("/article/:articleid/comment/:commentid", function(req, res) {
+	Comment.findById(req.params.commentid).remove(function(err, removed) {
+		if(err) {
+			res.status(500).end();
+			return;
+		} else if(!removed.result.n) {
+			res.status(404).end();
+			return;
+		}
+		res.status(200).end();
+
+	});
+});
 
 app.listen(port, ip);
