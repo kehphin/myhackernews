@@ -248,50 +248,7 @@ app.delete("/user/:username", auth, function(req, res){
 	});
     });
 });
-
-//add a story to the favorites list of a user
-app.post("/user/:username/favorite/:articleId", function(req, res) {
-
-	var toAdd = new Article(req.body);
-	//need to make sure we store the relevant info from the article in our DB
-	toAdd.save(function(err, article) {
-		
-		//do not care about the error if it only occurs 
-		//because the item already exists, this is fine
-		if(err && err.message.indexOf('duplicate key error') == -1) {
-			res.status(500).end();
-			return;
-		}
-		//update the set so we don't favorite the same story more than once
-		User.update({username: req.params.username},
-	                { $addToSet: {favorites: req.params.articleId}},
-	                function(err, modified) {
-	        if(err) {
-		    	res.status(500).end();
-		    	return;
-		    }
-		    res.status(200).end();
-	    });
-	});
-});
-
-//remove a favorite from list of a user
-app.delete("/user/:username/favorite/:articleid", function(req, res) {
-	User.update({username: req.params.username},
-			    { $pull: {favorites: req.params.articleid}},
-			    function(err, modified) {
-			 if(err) {
-				 res.status(500).end();
-				 return;
-			 } else if(!modified.nModified) {
-				 //if nothing was modified then the articleid was never on the list
-				 res.status(404).end();
-				 return;
-			 }
-			 res.status(200).end();
-			 return;
-	});
-}); 
+ 
 
 //add a user to the following list of a user
 app.post("/user/:username/follow/:tofollow", function(req, res) {
@@ -336,5 +293,55 @@ app.delete("/user/:username/follow/:tounfollow", function(req, res) {
 	    	 return;
     });
 });
+
+////////////////////////////////////////////////
+//Article Endpoints
+////////////////////////////////////////////////
+
+//add a story to the favorites list of a user
+app.post("/user/:username/favorite/:articleId", function(req, res) {
+
+	var toAdd = new Article(req.body);
+	//need to make sure we store the relevant info from the article in our DB
+	toAdd.save(function(err, article) {
+		
+		//do not care about the error if it only occurs 
+		//because the item already exists, this is fine
+		if(err && err.message.indexOf('duplicate key error') == -1) {
+			res.status(500).end();
+			return;
+		}
+		//update the set so we don't favorite the same story more than once
+		User.update({username: req.params.username},
+	                { $addToSet: {favorites: req.params.articleId}},
+	                function(err, modified) {
+	        if(err) {
+		    	res.status(500).end();
+		    	return;
+		    }
+		    res.status(200).end();
+	    });
+	});
+});
+
+//remove a favorite from list of a user
+app.delete("/user/:username/favorite/:articleid", function(req, res) {
+	User.update({username: req.params.username},
+			    { $pull: {favorites: req.params.articleid}},
+			    function(err, modified) {
+			 if(err) {
+				 res.status(500).end();
+				 return;
+			 } else if(!modified.nModified) {
+				 //if nothing was modified then the articleid was never on the list
+				 res.status(404).end();
+				 return;
+			 }
+			 res.status(200).end();
+			 return;
+	});
+});
+
+
 
 app.listen(port, ip);
