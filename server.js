@@ -248,50 +248,7 @@ app.delete("/user/:username", auth, function(req, res){
 	});
     });
 });
-
-//add a story to the favorites list of a user
-app.post("/user/:username/favorite/:articleId", function(req, res) {
-
-	var toAdd = new Article(req.body);
-	//need to make sure we store the relevant info from the article in our DB
-	toAdd.save(function(err, article) {
-		
-		//do not care about the error if it only occurs 
-		//because the item already exists, this is fine
-		if(err && err.message.indexOf('duplicate key error') == -1) {
-			res.status(500).end();
-			return;
-		}
-		//update the set so we don't favorite the same story more than once
-		User.update({username: req.params.username},
-	                { $addToSet: {favorites: req.params.articleId}},
-	                function(err, modified) {
-	        if(err) {
-		    	res.status(500).end();
-		    	return;
-		    }
-		    res.status(200).end();
-	    });
-	});
-});
-
-//remove a favorite from list of a user
-app.delete("/user/:username/favorite/:articleid", function(req, res) {
-	User.update({username: req.params.username},
-			    { $pull: {favorites: req.params.articleid}},
-			    function(err, modified) {
-			 if(err) {
-				 res.status(500).end();
-				 return;
-			 } else if(!modified.nModified) {
-				 //if nothing was modified then the articleid was never on the list
-				 res.status(404).end();
-				 return;
-			 }
-			 res.status(200).end();
-			 return;
-	});
-}); 
+ 
 
 //add a user to the following list of a user
 app.post("/user/:username/follow/:tofollow", function(req, res) {
@@ -335,6 +292,124 @@ app.delete("/user/:username/follow/:tounfollow", function(req, res) {
 	    	 res.status(200).end();
 	    	 return;
     });
+});
+
+////////////////////////////////////////////////
+//Article Endpoints
+////////////////////////////////////////////////
+
+//add a story to the favorites list of a user
+app.post("/user/:username/favorite/:articleId", function(req, res) {
+
+	var toAdd = new Article(req.body);
+	//need to make sure we store the relevant info from the article in our DB
+	toAdd.save(function(err, article) {
+		
+		//do not care about the error if it only occurs 
+		//because the item already exists, this is fine
+		if(err && err.message.indexOf('duplicate key error') == -1) {
+			res.status(500).end();
+			return;
+		}
+		//update the set so we don't favorite the same story more than once
+		User.update({username: req.params.username},
+	                { $addToSet: {favorites: req.params.articleId}},
+	                function(err, modified) {
+	        if(err) {
+		    	res.status(500).end();
+		    	return;
+		    } else if(!modified.n) {
+		    	res.status(404).end();
+		    	return;
+		    }
+		    res.status(200).end();
+	    });
+	});
+});
+
+//remove a favorite from list of a user
+app.delete("/user/:username/favorite/:articleid", function(req, res) {
+	User.update({username: req.params.username},
+			    { $pull: {favorites: req.params.articleid}},
+			    function(err, modified) {
+			 if(err) {
+				 res.status(500).end();
+				 return;
+			 } else if(!modified.nModified) {
+				 //if nothing was modified then the articleid was never on the list
+				 res.status(404).end();
+				 return;
+			 }
+			 res.status(200).end();
+			 return;
+	});
+});
+
+//given an article id this will return a list of all users that have favorited the article
+app.get("/article/:articleid/usersFavorited", function(req, res) {
+	User.find({favorites: req.params.articleid}, {username: 1, _id: 0}, function(err, users) {
+		if(err) {
+			res.status(500).end();
+			return;
+		}
+		res.json({users: users});
+	})
+})
+
+
+////////////////////////////////////////////////
+//Comment Endpoints
+////////////////////////////////////////////////
+
+//post a comment to a story
+app.post("/article/:articleid/comment", function(req, res) {
+    // need to make sure the article exists first
+    var toAdd = new Article(req.body.article);
+    // need to make sure we store the relevant info from the article in our DB
+    toAdd.save(function(err, article) {
+
+        // do not care about the error if it only occurs
+        // because the item already exists, this is fine
+        if(err && err.message.indexOf('duplicate key error') == -1) {
+            res.status(500).end();
+            return;
+        }
+        var newComment = new Comment(req.body.comment);
+        newComment.save(function(err, comment) {
+            if(err) {
+                res.status(500).end();
+                return;
+            }
+            res.status(200).end();
+        });
+    });
+});
+
+//get a list of all the comments for a story sorted by post time
+app.get("/article/:articleid/comments", function(req, res) {
+	Comment.find({article: req.params.articleid}).sort({dateCreated: 1}).exec(function(err, comments) {
+		if(err) {
+			res.status(500).end();
+			return;
+		}
+		res.json(comments);
+		return;
+	});
+});
+
+//delete a comment given its _id
+app.delete("/article/:articleid/comment/:commentid", function(req, res) {
+	Comment.findById(req.params.commentid).remove(function(err, removed) {
+		if(err) {
+			res.status(500).end();
+			return;
+		} else if(!removed.result.n) {
+			res.status(404).end();
+			return;
+		}
+		res.status(200).end();
+
+	});
 });
 
 app.listen(port, ip);
