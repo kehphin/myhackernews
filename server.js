@@ -120,20 +120,20 @@ var HackerNews = {
 
 // simple login endpoint, the authenticate function does the username-password
 // check here
-app.post("/login", passport.authenticate('local'), function(req, res){
+app.post("/api/login", passport.authenticate('local'), function(req, res){
     var user = req.user;
     console.log(user);
     res.json(user);
 });
 
 // checks if the user is logged in
-app.get('/loggedin', function(req, res)
+app.get('/api/loggedin', function(req, res)
 {
     res.send(req.isAuthenticated() ? req.user : '0');
 });
 
 // logs the user out and returns the proper status code
-app.post('/logout', function(req, res)
+app.post('/api/logout', function(req, res)
 {
     req.logOut();
     res.send(200);
@@ -144,7 +144,7 @@ app.post('/logout', function(req, res)
 // //////////////////////////////////////////////
 
 // create a new user
-app.post('/user', function(req, res)
+app.post('/api/user', function(req, res)
 {
     var newUser = new User(req.body);
     // save the user to the DB
@@ -169,7 +169,7 @@ app.post('/user', function(req, res)
 
 if(!process.env.OPENSHIFT_NODEJS_PORT) {
 // get a list of all users, just for testing locally
-app.get("/users", function(req, res)
+app.get("/api/users", function(req, res)
 {
     User.find({}, {password: 0}, function(err, users)
     {
@@ -179,8 +179,9 @@ app.get("/users", function(req, res)
 }
 
 // get a user by username
-app.get("/user/:username", function(req, res)
+app.get("/api/user/:username", function(req, res)
 {
+	//{password: 0} tells mongo not to give us the password back in its return JSON
     User.find({username: req.params.username}, {password: 0}, function(err, user)
 	{
     	if(err) {
@@ -225,7 +226,7 @@ app.get("/user/:username", function(req, res)
 });
 
 // delete a user by username, need to be logged in to do this
-app.delete("/user/:username", auth, function(req, res){
+app.delete("/api/user/:username", auth, function(req, res){
     User.find({username: req.params.username}).remove(function(err, user){
     	if(err) {
     		res.status(500).end();
@@ -235,13 +236,13 @@ app.delete("/user/:username", auth, function(req, res){
     		return;
     	}
     	res.status(200).end();
-    	//now we want to go remove this user from all other's follower lists
+    	//now we want to go remove this user from all other's following lists
     	User.update({following: req.params.username},
 			    { $pull: {following: req.params.username}},
 			    {multi: true},
 			    function(err, modified) {
 			 if(err) {
-				 console.log('An error occured when trying to remove a deleted user ' +
+				 console.error('An error occured when trying to remove a deleted user ' +
 						 'from the following list of others: ' + err);
 			 }
 			 return;
@@ -251,7 +252,7 @@ app.delete("/user/:username", auth, function(req, res){
  
 
 //add a user to the following list of a user
-app.post("/user/:username/follow/:tofollow", function(req, res) {
+app.post("/api/user/:username/follow/:tofollow", function(req, res) {
 	User.find({username: req.params.tofollow}, function(err, user) {
 		if(err) {
 			res.status(500).end();
@@ -274,7 +275,7 @@ app.post("/user/:username/follow/:tofollow", function(req, res) {
 });
 
 //remove a user from the following list of a user
-app.delete("/user/:username/follow/:tounfollow", function(req, res) {
+app.delete("/api/user/:username/follow/:tounfollow", function(req, res) {
 	//don't really care if the tounfollow person is a user or not
 	//if they aren't that might mean they deleted their account so could 
 	//be useful for logging
@@ -299,7 +300,7 @@ app.delete("/user/:username/follow/:tounfollow", function(req, res) {
 ////////////////////////////////////////////////
 
 //add a story to the favorites list of a user
-app.post("/user/:username/favorite/:articleId", function(req, res) {
+app.post("/api/user/:username/favorite/:articleId", function(req, res) {
 
 	var toAdd = new Article(req.body);
 	//need to make sure we store the relevant info from the article in our DB
@@ -328,7 +329,7 @@ app.post("/user/:username/favorite/:articleId", function(req, res) {
 });
 
 //remove a favorite from list of a user
-app.delete("/user/:username/favorite/:articleid", function(req, res) {
+app.delete("/api/user/:username/favorite/:articleid", function(req, res) {
 	User.update({username: req.params.username},
 			    { $pull: {favorites: req.params.articleid}},
 			    function(err, modified) {
@@ -346,7 +347,7 @@ app.delete("/user/:username/favorite/:articleid", function(req, res) {
 });
 
 //given an article id this will return a list of all users that have favorited the article
-app.get("/article/:articleid/usersFavorited", function(req, res) {
+app.get("/api/article/:articleid/usersFavorited", function(req, res) {
 	User.find({favorites: req.params.articleid}, {username: 1, _id: 0}, function(err, users) {
 		if(err) {
 			res.status(500).end();
@@ -362,7 +363,7 @@ app.get("/article/:articleid/usersFavorited", function(req, res) {
 ////////////////////////////////////////////////
 
 //post a comment to a story
-app.post("/article/:articleid/comment", function(req, res) {
+app.post("/api/article/:articleid/comment", function(req, res) {
     // need to make sure the article exists first
     var toAdd = new Article(req.body.article);
     // need to make sure we store the relevant info from the article in our DB
@@ -386,7 +387,7 @@ app.post("/article/:articleid/comment", function(req, res) {
 });
 
 //get a list of all the comments for a story sorted by post time
-app.get("/article/:articleid/comments", function(req, res) {
+app.get("/api/article/:articleid/comments", function(req, res) {
 	Comment.find({article: req.params.articleid}).sort({dateCreated: 1}).exec(function(err, comments) {
 		if(err) {
 			res.status(500).end();
@@ -398,7 +399,7 @@ app.get("/article/:articleid/comments", function(req, res) {
 });
 
 //delete a comment given its _id
-app.delete("/article/:articleid/comment/:commentid", function(req, res) {
+app.delete("/api/article/:articleid/comment/:commentid", function(req, res) {
 	Comment.findById(req.params.commentid).remove(function(err, removed) {
 		if(err) {
 			res.status(500).end();
