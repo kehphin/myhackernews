@@ -86,7 +86,8 @@ function(username, password, done)
 	// then compare
 	// hashed passwords
 	// TODO
-    User.findOne({username: username, password: password}, function(err, user)
+	// don't want the password to be sent back to the client, no need
+    User.findOne({username: username, password: password}, {password: 0}, function(err, user)
     {
         if (err) { return done(err); }
         if (!user) { return done(null, false); }
@@ -129,6 +130,26 @@ var HackerNews = {
 
 // simple login endpoint, the authenticate function does the username-password
 // check here
+/* An example input JSON:
+{
+    "username":"cflood",
+    "password":"foobar"
+}
+An example response JSON:
+{
+    "_id": "552dc8c706de35e41a298624",
+    "username": "cflood",
+    "password": "chris",
+    "__v": 0,
+    "favorites": [
+        "123",
+        "8863"
+    ],
+    "following": [
+        "cjf2xn"
+    ]
+}
+ */
 app.post("/api/login", passport.authenticate('local'), function(req, res){
     var user = req.user;
     console.log(user);
@@ -136,6 +157,8 @@ app.post("/api/login", passport.authenticate('local'), function(req, res){
 });
 
 // checks if the user is logged in
+//if the user is not logged in then it receives the integer 0
+//if the user is logged in then it receives the user document from mongo
 app.get('/api/loggedin', function(req, res)
 {
     res.send(req.isAuthenticated() ? req.user : '0');
