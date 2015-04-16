@@ -22,12 +22,16 @@ app.config(function($routeProvider, $httpProvider) {
           templateUrl: 'views/register/register.html',
           controller: 'RegisterCtrl'
       })
+      .when('/:articleId', {
+        templateUrl: 'views/register/article.html',
+        controller: 'ArticleCtrl'
+      })
       .otherwise({
           redirectTo: '/home'
       });
 });
 
-app.factory('StoryService', function StoryService($q, $http) {
+app.factory('StoryService', function StoryService($q, $http, $rootScope) {
 
     var favorites = [];
 
@@ -61,9 +65,18 @@ app.factory('StoryService', function StoryService($q, $http) {
       return deferred.promise;
     }
 
-    var addToFavorites = function(story)
-    {
-        favorites.push(story);
+    var addToFavorites = function(story) {
+      var reqBody = {
+        author: story.by,
+        HNId: story.id,
+        dateCreated: story.time,
+        title: story.title,
+        url: story.url
+      }
+
+      $http.post("/api/user/" + $rootScope.currentUser.username + "/favorite/" + story.id, reqBody).success(function(story) {
+        console.log("successfully added to favorites");
+      });
     }
 
     var getFavorites = function()

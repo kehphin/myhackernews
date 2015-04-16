@@ -34,7 +34,7 @@ var ArticleSchema = new mongoose.Schema({
 	dateCreated: {type: String},
 	title: {type: String, required: true},
 	url: {type: String, required: true}
-	
+
 });
 
 var Article = mongoose.model('Article', ArticleSchema);
@@ -56,7 +56,7 @@ var Comment = mongoose.model('Comment', CommentSchema);
 // Configure Express
 // //////////////////////////////////////////////
 
-//this function is used as middleware to log the request type, 
+//this function is used as middleware to log the request type,
 //path and body of all requests
 function logRequestBody(req, res, next) {
 	console.log(req.method + ' path=' + req.originalUrl + ' body=' + JSON.stringify(req.body));
@@ -167,7 +167,7 @@ app.post('/api/logout', function(req, res)
     "_id": "552edc222a9229800b7ee285",
     "favorites": [],
     "following": []
-} 
+}
  */
 app.post('/api/user', function(req, res)
 {
@@ -182,7 +182,7 @@ app.post('/api/user', function(req, res)
        	// now that the user is created we want to log them in
         req.login(user, function(err)
         {
-            if(err) { 
+            if(err) {
                	res.status(500);
                	return;
             }
@@ -299,7 +299,7 @@ app.get("/api/user/:username", function(req, res)
     		}
     		//let the other function know we have returned
     		complete = true;
-    		
+
     	});
     	//find all users that follow our current user, these are the 'followers'
     	//{username: 1, _id: 0} tells mongo to only return the username field in the document and to omit
@@ -335,7 +335,7 @@ app.delete("/api/user/:username", auth, function(req, res){
     		return;
     	}
     	res.status(200).end();
-    	//now we want to go remove this user from any other user's following list because of the deletion 
+    	//now we want to go remove this user from any other user's following list because of the deletion
     	User.update({following: req.params.username},
     			//pull removes the req.params.username from the following array
 			    { $pull: {following: req.params.username}},
@@ -349,7 +349,7 @@ app.delete("/api/user/:username", auth, function(req, res){
 	    });
     });
 });
- 
+
 
 //add a user to the following list of a user
 app.post("/api/user/:username/follow/:tofollow", function(req, res) {
@@ -380,7 +380,7 @@ app.post("/api/user/:username/follow/:tofollow", function(req, res) {
 //remove a user from the following list of a user
 app.delete("/api/user/:username/follow/:tounfollow", function(req, res) {
 	//don't really care if the tounfollow person is a user or not
-	//if they aren't that might mean they deleted their account so could 
+	//if they aren't that might mean they deleted their account so could
 	//be useful for logging
 	User.update({username: req.params.username},
 			    //pull removes the req.params.tounfollow from the favorites array
@@ -404,21 +404,22 @@ app.delete("/api/user/:username/follow/:tounfollow", function(req, res) {
 
 //add a story to the favorites list of a user
 /* An example input JSON:
-{ 
+{
   "author": "beau",
-  "HNId": 123,
-  "dateCreated": 1171923673,
+  "HNId": "123",
+  "dateCreated": "1171923673",
   "title": "Design Quotations: &#34;And if in fact you do know the e technology is obsolete.&#34;",
-  "url": "http://design.caltech.edu/erik/Misc/design_quotes.html" 
+  "url": "http://design.caltech.edu/erik/Misc/design_quotes.html"
 }
  */
 app.post("/api/user/:username/favorite/:articleId", function(req, res) {
 
 	var toAdd = new Article(req.body);
+    console.log(req.body);
 	//need to make sure we store the relevant info from the article in our DB
 	toAdd.save(function(err, article) {
-		
-		//do not care about the error if it only occurs 
+
+		//do not care about the error if it only occurs
 		//because the item already exists, this is fine
 		if(err && err.message.indexOf('duplicate key error') == -1) {
 			res.status(500).end();
@@ -426,15 +427,17 @@ app.post("/api/user/:username/favorite/:articleId", function(req, res) {
 		}
 		//update the set so we don't favorite the same story more than once
 		User.update({username: req.params.username},
-				    //addToSet adds the req.params.articleid to the favorites array 
+				    //addToSet adds the req.params.articleid to the favorites array
 				    //if it does not already contain it
 	                { $addToSet: {favorites: req.params.articleId}},
 	                function(err, modified) {
+            console.log(modified.n);
 	        if(err) {
 		    	res.status(500).end();
 		    	return;
 		    //if nothing was modified then it didn't contain it so return 404
 		    } else if(!modified.n) {
+                console.log("asdfasdfas");
 		    	res.status(404).end();
 		    	return;
 		    }
@@ -493,7 +496,7 @@ app.get("/api/article/:articleid/usersFavorited", function(req, res) {
 
 //post a comment to a story
 /* An example input JSON:
-{ 
+{
   "article": {
     "author":"dhouston",
     "descendants":71,

@@ -1,4 +1,9 @@
-app.controller('ProfileCtrl', function($scope, $http, $rootScope){
+app.controller('ArticleCtrl', function($scope, $http, $rootScope, $routeParams) {
+    $scope.init = function() {
+        StoryService.getStories("topstories").then(function(stories) {
+          $scope.stories = stories;
+        });
+      }
 
     $scope.favorites = $rootScope.currentUser.favorites;
 

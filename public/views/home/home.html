@@ -9,27 +9,11 @@
   <a ng-Click="sortStories('newstories')" class="sort">Newest</a>
 </div>
 
-<div ng-show="favorites.length > 0">
-    <h2>Favorites</h2>
-    <table class="table table-striped">
-        <tbody>
-            <tr ng-repeat="story in favorites">
-                <td>{{story.title}}</td>
-                <td>
-                    <button class="btn btn-danger pull-right">
-                        <span class="glyphicon glyphicon-star-empty"></span>
-                    </button>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-</div>
-
 <table class="table table-striped" ng-init="init()">
     <tbody>
         <tr>
-
           <th>Title</th>
+          <th></th>
           <th>By</th>
           <th>Points</th>
           <th></th>
@@ -37,6 +21,11 @@
         <tr ng-repeat="story in stories">
             <td>
               <a ng-href="{{story.url}}">{{story.title}}</a>
+            </td>
+            <td>
+              <div class="commentLink">
+                <a ng-href="#{{story.id}}">View Comments</a>
+              </div>
             </td>
             <td>{{story.by}}</td>
             <td>{{story.score}}</td>
