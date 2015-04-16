@@ -56,6 +56,8 @@ var Comment = mongoose.model('Comment', CommentSchema);
 // Configure Express
 // //////////////////////////////////////////////
 
+//this function is used as middleware to log the request type, 
+//path and body of all requests
 function logRequestBody(req, res, next) {
 	console.log(req.method + ' path=' + req.originalUrl + ' body=' + JSON.stringify(req.body));
 	next();
@@ -69,7 +71,7 @@ app.use(session({ secret: 'this is the secret' }));
 app.use(cookieParser())
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(logRequestBody);
+app.use(logRequestBody); //for logging requests
 app.use(express.static(__dirname + '/public'));
 
 
@@ -111,6 +113,7 @@ var auth = function(req, res, next)
 ////////////////////////////////////////////////
 //Hacker News API
 ////////////////////////////////////////////////
+//don't currently use this but leaving it in
 var HackerNews = {
 	host: 'hacker-news.firebaseio.com',
 	path: '/v0/item/'
@@ -183,6 +186,7 @@ app.post('/api/user', function(req, res)
                	res.status(500);
                	return;
             }
+            //don't want to transmit the password back over the wire
             user.password = null;
             res.json(user);
         });
@@ -261,47 +265,61 @@ app.get("/api/users", function(req, res)
  */
 app.get("/api/user/:username", function(req, res)
 {
-	//{password: 0} tells mongo not to give us the password back in its return JSON
+	//{password: 0} tells mongo to omit the password field in any return documents
     User.find({username: req.params.username}, {password: 0}, function(err, user)
 	{
     	if(err) {
     		res.status(500).end();
     		return;
+    	//if no users exist with the username return 404
     	} else if(!user.length) {
     		res.status(404).end();
     		return;
     	}
     	//need to do a find for all HNId's in the favorited section
-    	//Mongoose has some control over when the object is stringified and since we want
+    	//Mongoose has some control over when the object is sent in the request and since we want
     	//to add the followers field on our own below we need to make a copy of the object
+    	//quick clone of the object
     	var curUser = JSON.parse(JSON.stringify(user[0]));
+    	//make 2 async requests so only want to return to client when both requests have come back
     	var complete = false;
+    	//want to find all articles which the user has favorited
+    	//lookup by HNId
     	Article.find({HNId: { $in: curUser.favorites}}, function(err, articles) {
     		if(err) {
     			console.log("The error when looking by HNId for favorites is " + err);
     			res.status(500).end();
     			return;
     		}
+    		//set the favorites field to contain the list of article documents
     		curUser.favorites = articles;
+    		//complete is true if the other async already returned so send data to client
     		if(complete) {
         		res.json(curUser);
     		}
+    		//let the other function know we have returned
     		complete = true;
     		
     	});
+    	//find all users that follow our current user, these are the 'followers'
+    	//{username: 1, _id: 0} tells mongo to only return the username field in the document and to omit
+    	//_id field which comes by default
     	User.find({following: curUser.username}, {username: 1, _id: 0}, function(err, users) {
     		if(err) {
     			console.log("An error when looking for number of followers for " + curUser.username);
     			res.status(500).end();
     			return;
     		}
+    		//set the followers field to a list of usernames
+    		//the map is used to get rid of the JSON and just have a list of usernames
     		curUser.followers = users.map(function(el) {return el.username;});
+    		//complete is true if the other async already returned so send data to client
     		if(complete) {
     			res.json(curUser);
     		}
+    		//let the other function know we have returned
     		complete = true;
-    		
-    	})
+    	});
     });
 });
 
@@ -311,22 +329,24 @@ app.delete("/api/user/:username", auth, function(req, res){
     	if(err) {
     		res.status(500).end();
     		return;
+        //if the delete did not modify the collection in any way then no user matched so send a 404
     	} else if(!user.result.n) {
     		res.status(404).end();
     		return;
     	}
     	res.status(200).end();
-    	//now we want to go remove this user from all other's following lists
+    	//now we want to go remove this user from any other user's following list because of the deletion 
     	User.update({following: req.params.username},
+    			//pull removes the req.params.username from the following array
 			    { $pull: {following: req.params.username}},
+			    //multi tells mongo to update multiple documents if they match the find query
 			    {multi: true},
 			    function(err, modified) {
 			 if(err) {
 				 console.error('An error occured when trying to remove a deleted user ' +
 						 'from the following list of others: ' + err);
 			 }
-			 return;
-	});
+	    });
     });
 });
  
@@ -337,12 +357,15 @@ app.post("/api/user/:username/follow/:tofollow", function(req, res) {
 		if(err) {
 			res.status(500).end();
 			return;
+		//if no users match then return 404
 		} else if(!user.length) {
 			res.status(404).end();
 			return;
 		}
 		//we found the user they want to add
 		User.update({username: req.params.username},
+				//addToSet adds the req.params.tofollow to the array only if it does not already contain it
+				//prevents same item added more than once
                 { $addToSet: {following: req.params.tofollow}},
                 function(err, modified) {
             if(err) {
@@ -360,6 +383,7 @@ app.delete("/api/user/:username/follow/:tounfollow", function(req, res) {
 	//if they aren't that might mean they deleted their account so could 
 	//be useful for logging
 	User.update({username: req.params.username},
+			    //pull removes the req.params.tounfollow from the favorites array
 		        { $pull: {following: req.params.tounfollow}},
 		        function(err, modified) {
 		     if(err) {
@@ -371,7 +395,6 @@ app.delete("/api/user/:username/follow/:tounfollow", function(req, res) {
 	     		 return;
 	    	 }
 	    	 res.status(200).end();
-	    	 return;
     });
 });
 
@@ -403,11 +426,14 @@ app.post("/api/user/:username/favorite/:articleId", function(req, res) {
 		}
 		//update the set so we don't favorite the same story more than once
 		User.update({username: req.params.username},
+				    //addToSet adds the req.params.articleid to the favorites array 
+				    //if it does not already contain it
 	                { $addToSet: {favorites: req.params.articleId}},
 	                function(err, modified) {
 	        if(err) {
 		    	res.status(500).end();
 		    	return;
+		    //if nothing was modified then it didn't contain it so return 404
 		    } else if(!modified.n) {
 		    	res.status(404).end();
 		    	return;
@@ -420,6 +446,7 @@ app.post("/api/user/:username/favorite/:articleId", function(req, res) {
 //remove a favorite from list of a user
 app.delete("/api/user/:username/favorite/:articleid", function(req, res) {
 	User.update({username: req.params.username},
+			    //pull removes the req.params.articleid from the favorites array
 			    { $pull: {favorites: req.params.articleid}},
 			    function(err, modified) {
 			 if(err) {
@@ -431,7 +458,6 @@ app.delete("/api/user/:username/favorite/:articleid", function(req, res) {
 				 return;
 			 }
 			 res.status(200).end();
-			 return;
 	});
 });
 
@@ -449,11 +475,13 @@ app.delete("/api/user/:username/favorite/:articleid", function(req, res) {
 }
  */
 app.get("/api/article/:articleid/usersFavorited", function(req, res) {
+	//{username: 1, _id: 0} tells mongo to only return the username field in documents that match
 	User.find({favorites: req.params.articleid}, {username: 1, _id: 0}, function(err, users) {
 		if(err) {
 			res.status(500).end();
 			return;
 		}
+		//return a list of the usernames which have favorited the indicated article
 		res.json({users: users});
 	})
 })
@@ -528,13 +556,13 @@ app.post("/api/article/:articleid/comment", function(req, res) {
 ]
  */
 app.get("/api/article/:articleid/comments", function(req, res) {
+	//want to sort the comments from oldest to newest
 	Comment.find({article: req.params.articleid}).sort({dateCreated: 1}).exec(function(err, comments) {
 		if(err) {
 			res.status(500).end();
 			return;
 		}
 		res.json(comments);
-		return;
 	});
 });
 
@@ -548,10 +576,12 @@ app.get("/api/article/:articleid/comments", function(req, res) {
 }
  */
 app.put("/api/article/:articleid/comment/:commentid", function(req, res) {
+	//want to replace the comment at _id with the body of the request
 	Comment.update({_id: req.params.commentid}, req.body, function(err, comment) {
 		if(err) {
 			res.status(500).end();
 			return;
+	    //if nothing was found for the _id then return a 404
 		} else if(!comment.n) {
 			res.status(404).end();
 			return;
@@ -566,6 +596,7 @@ app.delete("/api/article/:articleid/comment/:commentid", function(req, res) {
 		if(err) {
 			res.status(500).end();
 			return;
+		//if nothing was removed then return a 404
 		} else if(!removed.result.n) {
 			res.status(404).end();
 			return;
@@ -575,4 +606,5 @@ app.delete("/api/article/:articleid/comment/:commentid", function(req, res) {
 	});
 });
 
+//start the server
 app.listen(port, ip);
