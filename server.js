@@ -7,7 +7,8 @@ var LocalStrategy = require('passport-local').Strategy;
 var cookieParser  = require('cookie-parser');
 var session       = require('express-session');
 var mongoose      = require('mongoose');
-var https          = require('https');
+var https         = require('https');
+var crypto        = require('crypto');
 
 var connectionString = process.env.OPENSHIFT_MONGODB_DB_URL || 'mongodb://localhost/test';
 var ip = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1';
@@ -20,7 +21,7 @@ var db = mongoose.connect(connectionString);
 // MODELS
 // //////////////////////////////////////////////
 var UserSchema = new mongoose.Schema({
-    username: {type: String, required: true, unique: true},
+    username: {type: String, required: true, unique: true, index: true},
     password: {type: String, required: true},
     following: [String],
     favorites: [String]
@@ -29,7 +30,7 @@ var UserSchema = new mongoose.Schema({
 var User = mongoose.model('User', UserSchema);
 
 var ArticleSchema = new mongoose.Schema({
-	HNId: {type: String, unique: true, required: true},
+	HNId: {type: String, unique: true, required: true, index: true},
 	author: {type: String},
 	dateCreated: {type: String},
 	title: {type: String, required: true},
@@ -46,7 +47,7 @@ var CommentSchema = new mongoose.Schema({
 	poster: {type: String, required: true},
 	text: {type: String, required: true},
 	dateCreated: {type: Date, default: Date.now},
-	article: {type: String, required: true}
+	article: {type: String, required: true, index: true}
 });
 
 var Comment = mongoose.model('Comment', CommentSchema);
@@ -59,7 +60,13 @@ var Comment = mongoose.model('Comment', CommentSchema);
 //this function is used as middleware to log the request type,
 //path and body of all requests
 function logRequestBody(req, res, next) {
-	console.log(req.method + ' path=' + req.originalUrl + ' body=' + JSON.stringify(req.body));
+	var body = JSON.stringify(req.body);
+	var toLog = req.method + ' path=' + req.originalUrl;
+	//don't want to log passwords
+	if(body.indexOf('password') == -1) {
+		toLog += ' body=' + body;
+	}
+	console.log(toLog);
 	next();
 }
 
@@ -79,19 +86,31 @@ app.use(express.static(__dirname + '/public'));
 // Passport Functions
 // //////////////////////////////////////////////
 
+//wrapper around the hashing function with the iterations and length hardcoded
+//to be consistent when calling
+function hashPassword(password, salt, callback) {
+	crypto.pbkdf2(password, salt, 10, 32, callback);
+}
+
 passport.use(new LocalStrategy(
 function(username, password, done)
 {
-	// probably want to change this to hash passwords before they are stored and
-	// then compare
-	// hashed passwords
-	// TODO
-    User.findOne({username: username, password: password}, function(err, user)
-    {
-        if (err) { return done(err); }
-        if (!user) { return done(null, false); }
-        return done(null, user);
-    })
+	//ideally we run this server under HTTPS so that the request
+	//bodies are encrypted so the passwords don't transmit in plaintext
+    User.findOne({username: username}, function(err, user) {
+    	hashPassword(password, username, function(err, key) {
+    		if (err) {
+    			return done(err);
+    		}
+            if (!user) {
+            	return done(null, false);
+            }
+            if(!(key.toString('hex') == user.password)) {
+            	return done(null, false);
+            }
+            return done(null, user);
+    	});
+    });
 }));
 
 passport.serializeUser(function(user, done) {
@@ -129,6 +148,26 @@ var HackerNews = {
 
 // simple login endpoint, the authenticate function does the username-password
 // check here
+/* An example input JSON:
+{
+    "username":"cflood",
+    "password":"foobar"
+}
+An example response JSON:
+{
+    "_id": "552dc8c706de35e41a298624",
+    "username": "cflood",
+    "password": "chris",
+    "__v": 0,
+    "favorites": [
+        "123",
+        "8863"
+    ],
+    "following": [
+        "cjf2xn"
+    ]
+}
+ */
 app.post("/api/login", passport.authenticate('local'), function(req, res){
     var user = req.user;
     console.log(user);
@@ -136,6 +175,8 @@ app.post("/api/login", passport.authenticate('local'), function(req, res){
 });
 
 // checks if the user is logged in
+//if the user is not logged in then it receives the integer 0
+//if the user is logged in then it receives the user document from mongo
 app.get('/api/loggedin', function(req, res)
 {
     res.send(req.isAuthenticated() ? req.user : '0');
@@ -173,23 +214,26 @@ app.post('/api/user', function(req, res)
 {
     var newUser = new User(req.body);
     // save the user to the DB
-    newUser.save(function(err, user)
-    {
-      	if(err) {
-       		res.status(500).json(err);
-       		return;
-       	}
-       	// now that the user is created we want to log them in
-        req.login(user, function(err)
-        {
-            if(err) {
-               	res.status(500);
-               	return;
-            }
-            //don't want to transmit the password back over the wire
-            user.password = null;
-            res.json(user);
-        });
+    hashPassword(newUser.password, newUser.username, function(err, key) {
+    	newUser.password = key.toString('hex');
+    	newUser.save(function(err, user)
+    		    {
+    		      	if(err) {
+    		       		res.status(500).json(err);
+    		       		return;
+    		       	}
+    		       	// now that the user is created we want to log them in
+    		        req.login(user, function(err)
+    		        {
+    		            if(err) {
+    		               	res.status(500);
+    		               	return;
+    		            }
+    		            //don't want to transmit the password back over the wire
+    		            user.password = null;
+    		            res.json(user);
+    		        });
+    		    });
     });
 });
 
