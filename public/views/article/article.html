@@ -36,4 +36,27 @@
           </td>
       </tr>
   </tbody>
-  </table>
+</table>
+
+<h2>Comments</h2>
+<div ng-show="currentUser">
+  <textarea ng-model="commentText" class="form-control" rows="4"></textarea>
+  <button class="btn btn-primary" ng-click="postComment()">Submit</button>
+</div>
+
+<table class="table table-striped">
+  <tbody>
+      <tr ng-show="comments.length > 0">
+        <th>Username</th>
+        <th>Comment</th>
+        <th>Date</th>
+      </tr>
+      <tr ng-repeat="comment in comments">
+          <td>
+            <a ng-href="#/profile/{{comment.poster}}">{{comment.poster}}</a>
+          </td>
+          <td>{{comment.text}}</td>
+          <td>{{comment.dateCreated | date:"MM/dd/yyyy 'at' h:mma"}}</td>
+      </tr>
+  </tbody>
+</table>
