@@ -538,6 +538,28 @@ app.get("/api/article/:articleid/comments", function(req, res) {
 	});
 });
 
+//edit a comment given its _id
+/* An example input JSON:
+{
+    "poster": "cjf2xn",
+    "article": "12",
+    "text": "This is the newer content of the comment.",
+    "dateCreated": "2015-04-15T21:53:36.072Z"
+}
+ */
+app.put("/api/article/:articleid/comment/:commentid", function(req, res) {
+	Comment.update({_id: req.params.commentid}, req.body, function(err, comment) {
+		if(err) {
+			res.status(500).end();
+			return;
+		} else if(!comment.n) {
+			res.status(404).end();
+			return;
+		}
+		res.status(200).end();
+	});
+});
+
 //delete a comment given its _id
 app.delete("/api/article/:articleid/comment/:commentid", function(req, res) {
 	Comment.findById(req.params.commentid).remove(function(err, removed) {
