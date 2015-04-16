@@ -1,6 +1,12 @@
 <h1>MyHackerNews</h1>
 
-<h1>Top 20 HN Articles</h1>
+<h1 class="title">Top 20 HN Articles</h1>
+<div class="pull-right">
+  Sort by:
+  <a ng-click="sortStories('topstories')" class="sort">Top</a>
+  |
+  <a ng-Click="sortStories('newstories')" class="sort">Newest</a>
+</div>
 
 <div ng-show="favorites.length > 0">
     <h2>Favorites</h2>
@@ -21,19 +27,18 @@
 <table class="table table-striped" ng-init="init()">
     <tbody>
         <tr>
-          <th>Points</th>
+
           <th>Title</th>
           <th>By</th>
-          <th>Url</th>
+          <th>Points</th>
           <th></th>
         </tr>
         <tr ng-repeat="story in stories">
-            <td>{{story.score}}</td>
-            <td>{{story.title}}</td>
-            <td>{{story.by}}</td>
             <td>
-              <a ng-href="{{story.url}}">{{story.url}}</a>
+              <a ng-href="{{story.url}}">{{story.title}}</a>
             </td>
+            <td>{{story.by}}</td>
+            <td>{{story.score}}</td>
             <td>
                 <button ng-click="addToFavorites(story)" class="btn btn-warning">
                     <span class="glyphicon glyphicon-star"></span>
@@ -42,6 +47,3 @@
         </tr>
     </tbody>
   </table>
-
-  {{stories}}
-
