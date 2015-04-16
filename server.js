@@ -60,7 +60,13 @@ var Comment = mongoose.model('Comment', CommentSchema);
 //this function is used as middleware to log the request type, 
 //path and body of all requests
 function logRequestBody(req, res, next) {
-	console.log(req.method + ' path=' + req.originalUrl + ' body=' + JSON.stringify(req.body));
+	var body = JSON.stringify(req.body);
+	var toLog = req.method + ' path=' + req.originalUrl;
+	//don't want to log passwords
+	if(body.indexOf('password') == -1) {
+		toLog += ' body=' + body;
+	}
+	console.log(toLog);
 	next();
 }
 
