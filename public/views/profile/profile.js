@@ -1,12 +1,20 @@
-app.controller('ProfileCtrl', function($scope, $http, $rootScope){
+app.controller('ProfileCtrl', function($scope, $http, $rootScope, $routeParams){
 
-    $scope.favorites = $rootScope.currentUser.favorites;
 
-    $scope.remove = function(user)
+    $scope.$on('$viewContentLoaded', function() {
+        $http.get('/api/user/' + $routeParams.username).success(function(user){
+           $scope.favorites = user.favorites;
+           $scope.following = user.following;
+           $scope.followers = user.followers;
+        });
+    });
+
+    $scope.removeFavorite = function(story, index)
     {
-        $http.delete('/api/user/'+user._id)
-        .success(function(users){
-           $scope.users = users;
+        $http.delete('/api/user/' + $rootScope.currentUser.username + "/favorite/" + story.HNId)
+        .success(function(users) {
+            console.log("deleted favorited article");
+            $scope.favorites.splice(index, 1);
         });
     }
 

@@ -22,9 +22,13 @@ app.config(function($routeProvider, $httpProvider) {
           templateUrl: 'views/register/register.html',
           controller: 'RegisterCtrl'
       })
-      .when('/:articleId', {
-        templateUrl: 'views/register/article.html',
+      .when('/article/:articleId', {
+        templateUrl: 'views/article/article.html',
         controller: 'ArticleCtrl'
+      })
+      .when('/profile/:username', {
+        templateUrl: 'views/profile/profile.html',
+        controller: 'ProfileCtrl'
       })
       .otherwise({
           redirectTo: '/home'
@@ -34,6 +38,16 @@ app.config(function($routeProvider, $httpProvider) {
 app.factory('StoryService', function StoryService($q, $http, $rootScope) {
 
     var favorites = [];
+
+    var getStory = function(id) {
+      var deferred = $q.defer();
+
+      $http.get("https://hacker-news.firebaseio.com/v0/item/"+ id + ".json").success(function(json) {
+        deferred.resolve(json);
+      });
+
+      return deferred.promise;
+    }
 
     var getStories = function(sortType) {
       var deferred = $q.defer();
@@ -85,6 +99,7 @@ app.factory('StoryService', function StoryService($q, $http, $rootScope) {
     }
 
     return {
+        getStory: getStory,
         getStories: getStories,
         addToFavorites: addToFavorites,
         getFavorites: getFavorites

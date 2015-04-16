@@ -1,38 +1,18 @@
-app.controller('ArticleCtrl', function($scope, $http, $rootScope, $routeParams) {
-    $scope.init = function() {
-        StoryService.getStories("topstories").then(function(stories) {
-          $scope.stories = stories;
+app.controller('ArticleCtrl', function($scope, $http, $rootScope, $routeParams, StoryService) {
+    $scope.$on('$viewContentLoaded', function() {
+
+        StoryService.getStory($routeParams.articleId).then(function(story) {
+            $scope.article = story;
         });
-      }
 
-    $scope.favorites = $rootScope.currentUser.favorites;
-
-    $scope.remove = function(user)
-    {
-        $http.delete('/api/user/'+user._id)
-        .success(function(users){
-           $scope.users = users;
+        $http.get('/api/article/' + $routeParams.articleId + "/comments").success(function(comments) {
+            console.log(comments);
+            $scope.comments = comments;
         });
-    }
 
-    $scope.update = function(user)
-    {
-        $http.put('/api/user/'+user._id, user)
-        .success(function(users){
-            $scope.users = users;
+        $http.get('/api/article/' + $routeParams.articleId + "/usersFavorited").success(function(articleFavorited) {
+            console.log(articleFavorited.users);
+            $scope.articleFavorited = articleFavorited.users;
         });
-    }
-
-    $scope.add = function(user)
-    {
-        $http.post('/api/user', user)
-        .success(function(users){
-            $scope.users = users;
-        });
-    }
-
-    $scope.select = function(user)
-    {
-        $scope.user = user;
-    }
+    });
 });

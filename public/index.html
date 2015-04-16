@@ -10,6 +10,7 @@
 <script src="views/profile/profile.js"></script>
 <script src="views/nav/nav.js"></script>
 <script src="views/register/register.js"></script>
+<script src="views/article/article.js"></script>
 <body ng-app="MyHackerNewsApp">
     <div class="container">
         <nav ng-controller="NavCtrl">
@@ -19,7 +20,7 @@
               <a href="#register">Register</a>
           </span>
           <span ng-show="currentUser">
-              <a href="#profile">Profile</a> |
+              <a ng-href="#profile/{{currentUser.username}}">Profile</a> |
               <a href="#logout" ng-click="logout()">Logout</a>
           </span>
         </nav>
