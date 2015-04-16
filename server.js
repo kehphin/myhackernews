@@ -21,7 +21,7 @@ var db = mongoose.connect(connectionString);
 // MODELS
 // //////////////////////////////////////////////
 var UserSchema = new mongoose.Schema({
-    username: {type: String, required: true, unique: true},
+    username: {type: String, required: true, unique: true, index: true},
     password: {type: String, required: true},
     following: [String],
     favorites: [String]
@@ -30,7 +30,7 @@ var UserSchema = new mongoose.Schema({
 var User = mongoose.model('User', UserSchema);
 
 var ArticleSchema = new mongoose.Schema({
-	HNId: {type: String, unique: true, required: true},
+	HNId: {type: String, unique: true, required: true, index: true},
 	author: {type: String},
 	dateCreated: {type: String},
 	title: {type: String, required: true},
@@ -47,7 +47,7 @@ var CommentSchema = new mongoose.Schema({
 	poster: {type: String, required: true},
 	text: {type: String, required: true},
 	dateCreated: {type: Date, default: Date.now},
-	article: {type: String, required: true}
+	article: {type: String, required: true, index: true}
 });
 
 var Comment = mongoose.model('Comment', CommentSchema);
@@ -95,10 +95,8 @@ function hashPassword(password, salt, callback) {
 passport.use(new LocalStrategy(
 function(username, password, done)
 {
-	// probably want to change this to hash passwords before they are stored and
-	// then compare
-	// hashed passwords
-	// TODO
+	//ideally we run this server under HTTPS so that the request
+	//bodies are encrypted so the passwords don't transmit in plaintext
     User.findOne({username: username}, function(err, user) {
     	hashPassword(password, username, function(err, key) {
     		if (err) { 
