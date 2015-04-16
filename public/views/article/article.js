@@ -36,7 +36,8 @@ app.controller('ArticleCtrl', function($scope, $http, $rootScope, $routeParams, 
 
         $http.post('/api/article/' + $scope.article.id + "/comment", commentBody).success(function(users) {
             console.log("successfully posted comment");
-            $scope.comments.push($scope.commentText);
+            commentBody.comment.dateCreated = Date.now();
+            $scope.comments.push(commentBody.comment);
         });
     };
 });

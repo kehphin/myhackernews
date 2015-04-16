@@ -1,8 +1,8 @@
 app.controller('ProfileCtrl', function($scope, $http, $rootScope, $routeParams){
-
-
     $scope.$on('$viewContentLoaded', function() {
-        $http.get('/api/user/' + $routeParams.username).success(function(user){
+        $scope.username = $routeParams.username;
+
+        $http.get('/api/user/' + $scope.username).success(function(user){
            $scope.favorites = user.favorites;
            $scope.following = user.following;
            $scope.followers = user.followers;
@@ -18,24 +18,11 @@ app.controller('ProfileCtrl', function($scope, $http, $rootScope, $routeParams){
         });
     }
 
-    $scope.update = function(user)
+    $scope.followUser = function()
     {
-        $http.put('/api/user/'+user._id, user)
-        .success(function(users){
-            $scope.users = users;
+        $http.post('/api/user/' + $rootScope.currentUser.username + "/follow/" + $scope.username)
+        .success(function(users) {
+            $scope.followers.push($rootScope.currentUser.username);
         });
-    }
-
-    $scope.add = function(user)
-    {
-        $http.post('/api/user', user)
-        .success(function(users){
-            $scope.users = users;
-        });
-    }
-
-    $scope.select = function(user)
-    {
-        $scope.user = user;
     }
 });

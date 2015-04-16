@@ -13,7 +13,7 @@ app.controller("RegisterCtrl", function($scope, $http, $location, $rootScope){
                 if(response != null)
                 {
                     $rootScope.currentUser = response;
-                    $location.url("/profile");
+                    $location.url("/profile/" + $rootScope.currentUser.username);
                 }
             });
         }

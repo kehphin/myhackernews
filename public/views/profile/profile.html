@@ -1,7 +1,13 @@
-<h1>Profile</h1>
+
+<h1>Profile for {{username}}</h1>
+<button ng-show="currentUser && currentUser.username != username" ng-click="followUser()" class="btn btn-success">
+    <span class="glyphicon glyphicon-plus"></span>
+    Follow User
+</button>
 
 <div>
   <h2>Following</h2>
+  <h4>{{following.length}}</h4>
     <table class="table table-striped">
         <tbody>
             <tr ng-show="following.length > 0">
@@ -9,12 +15,7 @@
             </tr>
             <tr ng-repeat="user in following">
               <td>
-                <a ng-href="#{{story.url}}">{{user}}</a>
-              </td>
-              <td>
-                <button ng-show="currentUser" ng-click="removeFavorite(story, $index)" class="btn btn-danger">
-                    <span class="glyphicon glyphicon-remove"></span>
-                </button>
+                <a ng-href="#/profile/{{user}}">{{user}}</a>
               </td>
             </tr>
         </tbody>
@@ -23,6 +24,7 @@
 
 <div>
   <h2>Followers</h2>
+  <h4>{{followers.length}}</h4>
   <table class="table table-striped">
         <tbody>
             <tr ng-show="followers.length > 0">
@@ -30,23 +32,19 @@
             </tr>
             <tr ng-repeat="user in followers">
               <td>
-                <a ng-href="#{{story.url}}">{{user}}</a>
-              </td>
-              <td>
-                <button ng-show="currentUser" ng-click="removeFavorite(story, $index)" class="btn btn-danger">
-                    <span class="glyphicon glyphicon-remove"></span>
-                </button>
+                <a ng-href="#/profile/{{user}}">{{user}}</a>
               </td>
             </tr>
         </tbody>
     </table>
 </div>
 
-<div ng-show="favorites.length > 0">
+<div>
     <h2>Favorites</h2>
-    <table class="table table-striped">
+    <h3 ng-show="favorites.length == 0">{{username}} hasn't favorited any posts.</h3>
+    <table ng-show="favorites.length > 0" class="table table-striped">
         <tbody>
-            <tr>
+            <tr >
               <th>Title</th>
               <th></th>
               <th>By</th>
