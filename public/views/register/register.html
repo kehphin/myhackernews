@@ -1,7 +1,15 @@
 <h1>Register</h1>
 
-<input ng-model="user.username"/><br/>
-<input ng-model="user.password"/><br/>
-<input ng-model="user.password2"/><br/>
-<button ng-click="register(user)">Register</button><br/>
-{{message}}
+<div class="input-group">
+  <input type="text" class="form-control" placeholder="Username" ng-model="user.username"/>
+</div>
+<div class="input-group">
+  <input type="password" class="form-control" placeholder="Password" ng-model="user.password"/>
+</div>
+<div class="input-group">
+  <input type="password" class="form-control" placeholder="Confirm Password" ng-model="user.password2"/>
+</div>
+<button class="btn btn-primary" ng-click="register(user)">Register</button>
+
+  {{message}}
+

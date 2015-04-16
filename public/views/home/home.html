@@ -1,6 +1,7 @@
 <h1>MyHackerNews</h1>
 
-<h1 class="title">Top 20 HN Articles</h1>
+<h1 ng-show="!newest">Top 20 HN Articles</h1>
+<h1 ng-show="newest">Newest 20 HN Articles</h1>
 <div class="pull-right">
   Sort by:
   <a ng-click="sortStories('topstories')" class="sort">Top</a>
@@ -40,7 +41,7 @@
             <td>{{story.by}}</td>
             <td>{{story.score}}</td>
             <td>
-                <button ng-click="addToFavorites(story)" class="btn btn-warning">
+                <button ng-show="currentUser" ng-click="addToFavorites(story)" class="btn btn-warning">
                     <span class="glyphicon glyphicon-star"></span>
                 </button>
             </td>

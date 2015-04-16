@@ -1,35 +1,35 @@
 app.controller('ProfileCtrl', function($scope, $http){
-    
-    $http.get("/rest/user")
+    /*
+    $http.get("/api/user")
     .success(function(users)
     {
         $scope.users = users;
     });
-    
+    */
     $scope.remove = function(user)
     {
-        $http.delete('/rest/user/'+user._id)
+        $http.delete('/api/user/'+user._id)
         .success(function(users){
-           $scope.users = users; 
+           $scope.users = users;
         });
     }
-    
+
     $scope.update = function(user)
     {
-        $http.put('/rest/user/'+user._id, user)
+        $http.put('/api/user/'+user._id, user)
         .success(function(users){
-            $scope.users = users; 
+            $scope.users = users;
         });
     }
-    
+
     $scope.add = function(user)
     {
-        $http.post('/rest/user', user)
+        $http.post('/api/user', user)
         .success(function(users){
-            $scope.users = users; 
+            $scope.users = users;
         });
     }
-    
+
     $scope.select = function(user)
     {
         $scope.user = user;

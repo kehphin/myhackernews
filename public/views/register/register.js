@@ -7,7 +7,7 @@ app.controller("RegisterCtrl", function($scope, $http, $location, $rootScope){
         }
         else
         {
-            $http.post("/register", user)
+            $http.post("/api/user", user)
             .success(function(response){
                 console.log(response);
                 if(response != null)

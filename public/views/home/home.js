@@ -8,6 +8,12 @@ app.controller("HomeCtrl", function($scope, $http, $location, $rootScope, StoryS
   $scope.sortStories = function(sortType) {
     StoryService.getStories(sortType).then(function(stories) {
       $scope.stories = stories;
+
+      if (sortType == "topstories") {
+        $scope.newest = false;
+      } else {
+        $scope.newest = true;
+      }
     });
   }
 
