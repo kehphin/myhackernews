@@ -13,7 +13,7 @@
 <script src="views/article/article.js"></script>
 <body ng-app="MyHackerNewsApp">
     <div class="container">
-        <nav ng-controller="NavCtrl" class="navbar navbar-default">
+        <div ng-controller="NavCtrl" class="navbar navbar-default page-container col-sm-offset-1 col-sm-10">
         <!-- Brand and toggle get grouped for better mobile display -->
     		<div class="navbar-header">
     		  <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#nav-breakdown">
@@ -22,7 +22,7 @@
     		    <span class="icon-bar"></span>
    		        <span class="icon-bar"></span>
     	  	  </button>
-     	 	  <a class="navbar-brand" href="">HN</a>
+     	 	  <a class="navbar-brand" href="#home">HN</a>
    			 </div>
    			 <div class="collapse navbar-collapse" id="nav-breakdown">
    			   <ul class="nav navbar-nav">
@@ -43,7 +43,7 @@
                    </li>
    			   </ul>
           </div>
-        </nav>
+        </div>
         <div ng-view>
         </div>
     </div>
