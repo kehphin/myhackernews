@@ -1,4 +1,4 @@
-app.controller('ProfileCtrl', function($scope, $http, $rootScope, $routeParams){
+app.controller('ProfileCtrl', function($scope, $http, $rootScope, $routeParams, StoryService){
     $scope.$on('$viewContentLoaded', function() {
         $scope.username = $routeParams.username;
 
@@ -11,11 +11,9 @@ app.controller('ProfileCtrl', function($scope, $http, $rootScope, $routeParams){
 
     $scope.removeFavorite = function(story, index)
     {
-        $http.delete('/api/user/' + $rootScope.currentUser.username + "/favorite/" + story.HNId)
-        .success(function(users) {
-            console.log("deleted favorited article");
-            $scope.favorites.splice(index, 1);
-        });
+    	StoryService.removeFavorite(story.HNId);
+        $scope.favorites.splice(index, 1);
+        $rootScope.currentUser.favorites.splice(index, 1);
     }
 
     $scope.followUser = function()

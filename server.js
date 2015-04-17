@@ -373,7 +373,7 @@ app.delete("/api/user/:username", auth, function(req, res){
     	if(err) {
     		res.status(500).end();
     		return;
-    	} 
+    	}
     	res.status(200).end();
     	//now we want to go remove this user from any other user's following list because of the deletion
     	User.update({following: req.params.username},
@@ -477,6 +477,26 @@ app.post("/api/user/:username/favorite/:articleId", function(req, res) {
 	});
 });
 
+//returns a list of the HNIds that the indicated user has favorited
+/* An example response JSON:
+[
+    "9392057",
+    "9392015"
+]
+ */
+app.get("/api/user/:username/favorites", function(req, res) {
+	User.find({username: req.params.username}, {favorites: 1, _id: 0}, function (err, users) {
+		if(err) {
+			res.status(500).end();
+			return;
+		} else if(!users.length) {
+			res.status(404).end();
+			return;
+		}
+		res.json(users[0].favorites);
+	})
+});
+
 //remove a favorite from list of a user
 app.delete("/api/user/:username/favorite/:articleid", function(req, res) {
 	User.update({username: req.params.username},
@@ -513,8 +533,8 @@ app.get("/api/article/:articleid/usersFavorited", function(req, res) {
 		}
 		//return a list of the usernames which have favorited the indicated article
 		res.json({users: users});
-	})
-})
+	});
+});
 
 
 ////////////////////////////////////////////////
