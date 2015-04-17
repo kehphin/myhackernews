@@ -15,52 +15,16 @@
 <div class="row">
 <div class="profile-tab-container col-md-12">
 <ul class="nav nav-tabs">
-  <li class="profile-tab followers-tab active">
+  <li class="profile-tab favorites-tab active">
+    <a ng-click="setProfileTabView('favorites-tab')" class="sort">Favorites ({{favorites.length}})</a>
+  </li>
+  <li class="profile-tab followers-tab">
     <a ng-click="setProfileTabView('followers-tab')" class="sort">Followers ({{followers.length}})</a>
   </li>
   <li class="profile-tab following-tab">
     <a ng-click="setProfileTabView('following-tab')" class="sort">Following ({{following.length}})</a>
   </li>
-  <li class="profile-tab favorites-tab">
-    <a ng-click="setProfileTabView('favorites-tab')" class="sort">Favorites ({{favorites.length}})</a>
-  </li>
 </ul>
-
-<div ng-show="tabView == 'following-tab'">
-  <h4 ng-show="following.length == 0 && currentUser.username != username">{{username}} isn't following anyone.</h4>
-  <h4 ng-show="following.length == 0 && currentUser.username == username">You aren't following anyone.</h4>
-
-  <h4 ng-show="following.length === 0"></h4>
-    <table ng-show="following.length > 0" class="table table-striped">
-        <tbody>
-            <tr>
-              <th>Username</th>
-            </tr>
-            <tr ng-repeat="user in following">
-              <td>
-                <a ng-href="#/profile/{{user}}">{{user}}</a>
-              </td>
-            </tr>
-        </tbody>
-    </table>
-</div>
-
-<div ng-show="tabView == 'followers-tab'">
-  <h4 ng-show="followers.length == 0 && currentUser.username != username">No one is following {{username}}.</h4>
-  <h4 ng-show="followers.length == 0 && currentUser.username == username">You don't have any followers yet.</h4>
-  <table ng-show="followers.length > 0" class="table table-striped">
-        <tbody>
-            <tr>
-              <th>Username</th>
-            </tr>
-            <tr ng-repeat="user in followers">
-              <td>
-                <a ng-href="#/profile/{{user}}">{{user}}</a>
-              </td>
-            </tr>
-        </tbody>
-    </table>
-</div>
 
 <div ng-show="tabView == 'favorites-tab'">
     <h4 ng-show="favorites.length == 0 && currentUser.username != username">{{username}} hasn't favorited any posts.</h3>
@@ -87,6 +51,42 @@
                 <button ng-show="currentUser && currentUser.username == username" ng-click="removeFavorite(story, $index)" class="btn btn-danger">
                     <span class="glyphicon glyphicon-remove"></span>
                 </button>
+              </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div ng-show="tabView == 'followers-tab'">
+  <h4 ng-show="followers.length == 0 && currentUser.username != username">No one is following {{username}}.</h4>
+  <h4 ng-show="followers.length == 0 && currentUser.username == username">You don't have any followers yet.</h4>
+  <table ng-show="followers.length > 0" class="table table-striped">
+        <tbody>
+            <tr>
+              <th>Username</th>
+            </tr>
+            <tr ng-repeat="user in followers">
+              <td>
+                <a ng-href="#/profile/{{user}}">{{user}}</a>
+              </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div ng-show="tabView == 'following-tab'">
+  <h4 ng-show="following.length == 0 && currentUser.username != username">{{username}} isn't following anyone.</h4>
+  <h4 ng-show="following.length == 0 && currentUser.username == username">You aren't following anyone.</h4>
+
+  <h4 ng-show="following.length === 0"></h4>
+    <table ng-show="following.length > 0" class="table table-striped">
+        <tbody>
+            <tr>
+              <th>Username</th>
+            </tr>
+            <tr ng-repeat="user in following">
+              <td>
+                <a ng-href="#/profile/{{user}}">{{user}}</a>
               </td>
             </tr>
         </tbody>
