@@ -560,6 +560,15 @@ app.get("/api/article/:articleid/usersFavorited", function(req, res) {
     "text":"This is another test comment."
  }
 }
+ * An example response JSON:
+{
+    "__v": 0,
+    "poster": "cjf2xn",
+    "article": "12",
+    "text": "This is the brand new comment.",
+    "_id": "5530909010e3f61c11a6b742",
+    "dateCreated": "2015-04-17T04:48:16.169Z"
+}
  */
 app.post("/api/article/:articleid/comment", function(req, res) {
     // need to make sure the article exists first
@@ -579,7 +588,7 @@ app.post("/api/article/:articleid/comment", function(req, res) {
                 res.status(500).end();
                 return;
             }
-            res.status(200).end();
+            res.json(comment);
         });
     });
 });
