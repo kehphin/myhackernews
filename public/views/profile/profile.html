@@ -9,6 +9,8 @@
     Unfollow User
 </button>
 
+<div class="row">
+<div class="profile-tab-container col-md-12">
 <ul class="nav nav-tabs">
   <li class="profile-tab followers-tab active">
     <a ng-click="setProfileTabView('followers-tab')" class="sort">Followers ({{followers.length}})</a>
@@ -83,41 +85,12 @@
     </table>
 </div>
 
-<div ng-show="currentUser.roles.indexOf('admin') > -1">
-  <h1>Admin</h1>
-  <h2>User List</h2>
-  <table class="table table-striped">
-    <tr>
-      <td>&nbsp;</td>
-      <td><input ng-model="user.username" class="form-control"/></td>
-      <td><input ng-model="user.password" class="form-control" type="password"/></td>
-      <td><input ng-model="user.firstName" class="form-control"/></td>
-      <td><input ng-model="user.lastName" class="form-control"/></td>
-      <td><input ng-model="user.email" class="form-control"/></td>
-      <td><input ng-model="user.roles" class="form-control"/></td>
-      <td><button ng-click="add(user)">&plus;</button>
-      <td><button ng-click="update(user)">&check;</button>
-    </tr>
-
-    </tr>
-    <tr ng-repeat="user in users">
-      <td>{{user._id}}</td>
-      <td>{{user.username}}</td>
-      <td>&nbsp;</td>
-      <td>{{user.firstName}}</td>
-      <td>{{user.lastName}}</td>
-      <td>{{user.email}}</td>
-      <td>{{user.roles}}</td>
-      <td><button ng-click="remove(user)">X</button>
-      <td><button ng-click="select(user)">...</button>
-      </tr>
-  </table>
 </div>
 
-<div>
+
+<div ng-show="similarUsers.length > 0" class="col-md-4">
   <h2>Similar Users</h2>
-  <h4 ng-show="similarUsers.length === 0">We can't find any similar users.</h4>
-    <table ng-show="similarUsers.length > 0" class="table table-striped">
+    <table class="table table-striped">
         <tbody>
             <tr>
               <th>Username</th>
@@ -133,4 +106,5 @@
             </tr>
         </tbody>
     </table>
+</div>
 </div>

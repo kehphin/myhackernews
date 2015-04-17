@@ -25,6 +25,10 @@ app.controller('ArticleCtrl', function($scope, $http, $rootScope, $routeParams, 
 
 		$http.get('/api/article/' + $routeParams.articleId + '/similarArticles').success(function(similarArticles) {
 			$scope.similarArticles = similarArticles;
+
+            if ($scope.similarArticles.length > 0) {
+                $(".profile-tab-container").addClass("col-md-8");
+            }
 		})
     });
 
