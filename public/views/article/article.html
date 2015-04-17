@@ -25,7 +25,8 @@
   </table>
 
 <h2>Favorited By</h2>
-<table class="table table-striped">
+<h3 ng-show="articleFavorited.length == 0">No one has favorited this post.</h3>
+<table ng-show="articleFavorited.length > 0" class="table table-striped">
   <tbody>
       <tr>
         <th>Username</th>
