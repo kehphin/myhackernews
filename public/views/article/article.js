@@ -20,6 +20,10 @@ app.controller('ArticleCtrl', function($scope, $http, $rootScope, $routeParams, 
 				$rootScope.currentUser.favorites = json;
 			});
 		}
+		
+		$http.get('/api/article/' + $routeParams.articleId + '/similarArticles').success(function(similarArticles) {
+			$scope.similarArticles = similarArticles;
+		})
     });
 
     $scope.postComment = function() {
