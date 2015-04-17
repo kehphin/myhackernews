@@ -1,8 +1,12 @@
 
 <h1>Profile for {{username}}</h1>
-<button ng-show="currentUser && currentUser.username != username" ng-click="followUser()" class="btn btn-success">
+<button ng-show="currentUser && currentUser.username != username && followers.indexOf(currentUser.username) == -1" ng-click="followUser()" class="btn btn-success">
     <span class="glyphicon glyphicon-plus"></span>
     Follow User
+</button>
+<button ng-show="currentUser && currentUser.username != username && followers.indexOf(currentUser.username) > -1" ng-click="unfollowUser()" class="btn btn-danger">
+    <span class="glyphicon glyphicon-minus"></span>
+    Unfollow User
 </button>
 
 <div>

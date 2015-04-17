@@ -142,6 +142,20 @@ var HackerNews = {
 // REST Endpoints
 // //////////////////////////////////////////////
 
+// General helper for dealing with strange mongo behavior
+// when checking the modified variable
+
+var checkModified = function(modified, subel) {
+    var flag;
+    if (typeof modified  === 'object') {
+        flag = subel;
+    } else {
+        flag = modified;
+    }
+
+    return flag;
+}
+
 // //////////////////////////////////////////////
 // Auth/Session Endpoints
 // //////////////////////////////////////////////
@@ -374,7 +388,7 @@ app.delete("/api/user/:username", auth, function(req, res){
     		res.status(500).end();
     		return;
         //if the delete did not modify the collection in any way then no user matched so send a 404
-    	} else if(!user.result.n) {
+    	} else if(!checkModified(user, user.result.n)) {
     		res.status(404).end();
     		return;
     	}
@@ -393,7 +407,6 @@ app.delete("/api/user/:username", auth, function(req, res){
 	    });
     });
 });
-
 
 //add a user to the following list of a user
 app.post("/api/user/:username/follow/:tofollow", function(req, res) {
@@ -430,10 +443,11 @@ app.delete("/api/user/:username/follow/:tounfollow", function(req, res) {
 			    //pull removes the req.params.tounfollow from the favorites array
 		        { $pull: {following: req.params.tounfollow}},
 		        function(err, modified) {
+
 		     if(err) {
 	    		 res.status(500).end();
 	    		 return;
-	    	 } else if(!modified.nModified) {
+	    	 } else if(!checkModified(modified, modified.nModified)) {
 	    		 //if nothing was modified then the tounfollow was never on the list
 	     		 res.status(404).end();
 	     		 return;
@@ -475,13 +489,12 @@ app.post("/api/user/:username/favorite/:articleId", function(req, res) {
 				    //if it does not already contain it
 	                { $addToSet: {favorites: req.params.articleId}},
 	                function(err, modified) {
-            console.log(modified.n);
+
 	        if(err) {
 		    	res.status(500).end();
 		    	return;
-		    //if nothing was modified then it didn't contain it so return 404
-		    } else if(!modified.n) {
-                console.log("asdfasdfas");
+            } else if(!checkModified(modified, modified.n)) {
+		        //if nothing was modified then it didn't contain it so return 404
 		    	res.status(404).end();
 		    	return;
 		    }
@@ -499,7 +512,7 @@ app.delete("/api/user/:username/favorite/:articleid", function(req, res) {
 			 if(err) {
 				 res.status(500).end();
 				 return;
-			 } else if(!modified.nModified) {
+			 } else if(!checkModified(modified, modified.nModified)) {
 				 //if nothing was modified then the articleid was never on the list
 				 res.status(404).end();
 				 return;
@@ -629,7 +642,7 @@ app.put("/api/article/:articleid/comment/:commentid", function(req, res) {
 			res.status(500).end();
 			return;
 	    //if nothing was found for the _id then return a 404
-		} else if(!comment.n) {
+		} else if(!checkModified(comment, comment.n)) {
 			res.status(404).end();
 			return;
 		}
@@ -644,7 +657,7 @@ app.delete("/api/article/:articleid/comment/:commentid", function(req, res) {
 			res.status(500).end();
 			return;
 		//if nothing was removed then return a 404
-		} else if(!removed.result.n) {
+		} else if(!checkModified(removed, removed.result.n)) {
 			res.status(404).end();
 			return;
 		}
