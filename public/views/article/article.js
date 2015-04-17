@@ -1,5 +1,7 @@
 app.controller('ArticleCtrl', function($scope, $http, $rootScope, $routeParams, StoryService) {
     $scope.$on('$viewContentLoaded', function() {
+        $scope.tabView = 'comments-tab';
+
         StoryService.getStory($routeParams.articleId).then(function(story) {
 
             $scope.article = story;
@@ -86,5 +88,12 @@ app.controller('ArticleCtrl', function($scope, $http, $rootScope, $routeParams, 
     	StoryService.removeFavorite(article.id);
     	$rootScope.currentUser.favorites.splice($rootScope.currentUser.favorites.indexOf(article.id.toString()), 1);
     	$scope.articleFavorited.splice($scope.articleFavorited.indexOf($rootScope.currentUser.username), 1);
+    }
+
+    $scope.setArticleTabView = function(tab) {
+        $(".profile-tab").removeClass('active');
+        $("." + tab).addClass('active');
+
+        $scope.tabView = tab;
     }
 });

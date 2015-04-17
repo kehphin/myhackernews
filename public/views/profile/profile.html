@@ -9,12 +9,23 @@
     Unfollow User
 </button>
 
-<div>
-  <h2>Following</h2>
-  <h4>{{following.length}}</h4>
-    <table class="table table-striped">
+<ul class="nav nav-tabs">
+  <li class="profile-tab followers-tab active">
+    <a ng-click="setProfileTabView('followers-tab')" class="sort">Followers ({{followers.length}})</a>
+  </li>
+  <li class="profile-tab following-tab">
+    <a ng-click="setProfileTabView('following-tab')" class="sort">Following ({{following.length}})</a>
+  </li>
+  <li class="profile-tab favorites-tab">
+    <a ng-click="setProfileTabView('favorites-tab')" class="sort">Favorites ({{favorites.length}})</a>
+  </li>
+</ul>
+
+<div ng-show="tabView == 'following-tab'">
+  <h4 ng-show="following.length === 0">{{username}} isn't following anyone.</h4>
+    <table ng-show="following.length > 0" class="table table-striped">
         <tbody>
-            <tr ng-show="following.length > 0">
+            <tr>
               <th>Username</th>
             </tr>
             <tr ng-repeat="user in following">
@@ -26,12 +37,11 @@
     </table>
 </div>
 
-<div>
-  <h2>Followers</h2>
-  <h4>{{followers.length}}</h4>
-  <table class="table table-striped">
+<div ng-show="tabView == 'followers-tab'">
+  <h4 ng-show="followers.length === 0">No one is following {{username}}.</h4>
+  <table ng-show="followers.length > 0" class="table table-striped">
         <tbody>
-            <tr ng-show="followers.length > 0">
+            <tr>
               <th>Username</th>
             </tr>
             <tr ng-repeat="user in followers">
@@ -43,8 +53,7 @@
     </table>
 </div>
 
-<div>
-    <h2>Favorites</h2>
+<div ng-show="tabView == 'favorites-tab'">
     <h3 ng-show="favorites.length == 0">{{username}} hasn't favorited any posts.</h3>
     <table ng-show="favorites.length > 0" class="table table-striped">
         <tbody>

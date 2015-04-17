@@ -1,24 +1,22 @@
-app.controller('ProfileCtrl', function($scope, $http, $rootScope, $routeParams, StoryService){
+app.controller('ProfileCtrl', function($scope, $http, $rootScope, $routeParams){
     $scope.$on('$viewContentLoaded', function() {
         $scope.username = $routeParams.username;
+        $scope.tabView = 'followers-tab';
 
         $http.get('/api/user/' + $scope.username).success(function(user){
            $scope.favorites = user.favorites;
            $scope.following = user.following;
            $scope.followers = user.followers;
         });
-        
-        $http.get('/api/user/' + $scope.username + '/similarUsers').success(function(users) {
-        	console.log(users);
-        	$scope.similarUsers = users;
-        });
     });
 
     $scope.removeFavorite = function(story, index)
     {
-    	StoryService.removeFavorite(story.HNId);
-        $scope.favorites.splice(index, 1);
-        $rootScope.currentUser.favorites.splice(index, 1);
+        $http.delete('/api/user/' + $rootScope.currentUser.username + "/favorite/" + story.HNId)
+        .success(function(users) {
+            console.log("deleted favorited article");
+            $scope.favorites.splice(index, 1);
+        });
     }
 
     $scope.followUser = function()
@@ -35,5 +33,14 @@ app.controller('ProfileCtrl', function($scope, $http, $rootScope, $routeParams, 
         .success(function(users) {
             $scope.followers.splice($scope.followers.indexOf($rootScope.currentUser.username), 1);
         });
+    }
+
+    $scope.setProfileTabView = function(tab)
+    {
+        $(".profile-tab").removeClass('active');
+        $("." + tab).addClass('active');
+
+        $scope.tabView = tab;
+
     }
 });

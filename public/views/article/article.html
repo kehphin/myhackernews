@@ -1,6 +1,7 @@
 <h1>Article</h1>
 
 <h1>Details</h1>
+
 <table class="table table-striped">
     <tbody>
         <tr>
@@ -27,7 +28,15 @@
     </tbody>
   </table>
 
-<h2>Favorited By</h2>
+<ul class="nav nav-tabs">
+  <li class="profile-tab comments-tab active">
+    <a ng-click="setArticleTabView('comments-tab')" class="sort">Comments ({{comments.length}})</a>
+  </li>
+  <li class="profile-tab articleFavorited-tab">
+    <a ng-click="setArticleTabView('articleFavorited-tab')" class="sort">Favorited By ({{articleFavorited.length}})</a>
+  </li>
+</ul>
+<div ng-show="tabView == 'articleFavorited-tab'">
 <h3 ng-show="articleFavorited.length == 0">No one has favorited this post.</h3>
 <table ng-show="articleFavorited.length > 0" class="table table-striped">
   <tbody>
@@ -41,8 +50,9 @@
       </tr>
   </tbody>
 </table>
+</div>
 
-<h2>Comments</h2>
+<div ng-show="tabView == 'comments-tab'">
 <div ng-show="currentUser">
   <textarea ng-model="commentText" class="form-control" rows="4"></textarea>
   <button class="btn btn-primary" ng-click="postComment()">Submit</button>
@@ -75,3 +85,4 @@
       </tr>
   </tbody>
 </table>
+</div>
