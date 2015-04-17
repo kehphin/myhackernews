@@ -7,6 +7,11 @@ app.controller('ProfileCtrl', function($scope, $http, $rootScope, $routeParams, 
            $scope.following = user.following;
            $scope.followers = user.followers;
         });
+        
+        $http.get('/api/user/' + $scope.username + '/similarUsers').success(function(users) {
+        	console.log(users);
+        	$scope.similarUsers = users;
+        });
     });
 
     $scope.removeFavorite = function(story, index)

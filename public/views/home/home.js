@@ -3,7 +3,7 @@ app.controller("HomeCtrl", function($scope, $http, $location, $rootScope, StoryS
     StoryService.getStories("topstories").then(function(article) {
       $scope.articles = article;
     });
-    if($rootScope.currentUser) {
+    if($rootScope.currentUser && $rootScope.currentUser != null) {
         StoryService.getFavorites().then(function(favorites) {
     	    $scope.currentUser.favorites = favorites;
         });
