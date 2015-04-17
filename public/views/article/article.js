@@ -46,6 +46,7 @@ app.controller('ArticleCtrl', function($scope, $http, $rootScope, $routeParams, 
             commentBody.comment.dateCreated = Date.now();
             $scope.comments.push(commentBody.comment);
         });
+        $scope.commentText = '';
     };
     
     $scope.addToFavorites = function(article) {
