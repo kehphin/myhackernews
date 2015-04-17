@@ -1,4 +1,4 @@
-app.controller('ProfileCtrl', function($scope, $http, $rootScope, $routeParams){
+app.controller('ProfileCtrl', function($scope, $http, $rootScope, $routeParams) {
     $scope.$on('$viewContentLoaded', function() {
         $scope.username = $routeParams.username;
         $scope.tabView = 'followers-tab';

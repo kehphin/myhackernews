@@ -1,3 +1,14 @@
+body {
+  background-color: #fbe8c6;
+}
+
+.login-container {
+  background-color: white;
+  margin-top: 20px;
+  -webkit-box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.20);
+  border-radius: 2px;
+}
+
 .sort {
   cursor: hand;
 }
@@ -9,4 +20,25 @@
 
 .similar-users {
   margin-top: -22px;
+}
+
+.profile-header {
+  display: inline-block;
+}
+
+.follow-btn {
+  margin-top: -19px;
+  margin-left: 10px;
+}
+
+.login-container {
+  padding: 25px;
+}
+
+.login-container > input {
+  margin-bottom: 10px;
+}
+
+.login-container > button {
+  margin-top: 30px;
 }

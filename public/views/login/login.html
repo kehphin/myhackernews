@@ -1,7 +1,9 @@
-<h1>Login</h1>
+<div class="login-container col-sm-offset-4 col-sm-4">
+  <h1 align="center">Login</h1>
 
-<input ng-model="user.username"/><br/>
-<input type="password" ng-model="user.password"/><br/>
-<button ng-click="login(user)">Login</button><br/>
+  <input ng-model="user.username" class="form-control" type="text" placeholder="Username">
+  <input ng-model="user.password" class="form-control" type="password" placeholder="Password">
+  <button ng-click="login(user)" class="btn btn-lg btn-primary btn-block">Sign in</button>
+  {{message}}
 
-{{message}}
+</div>
