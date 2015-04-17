@@ -34,10 +34,41 @@ app.controller('ArticleCtrl', function($scope, $http, $rootScope, $routeParams, 
             }
         };
 
-        $http.post('/api/article/' + $scope.article.id + "/comment", commentBody).success(function(users) {
+        $http.post('/api/article/' + $scope.article.id + "/comment", commentBody).success(function() {
             console.log("successfully posted comment");
             commentBody.comment.dateCreated = Date.now();
             $scope.comments.push(commentBody.comment);
         });
     };
+
+    $scope.saveComment = function(comment) {
+        comment.edit = undefined;
+
+        $http.put('/api/article/' + $routeParams.articleId + "/comment/" + comment._id, comment).success(function() {
+            console.log("comment saved");
+        });
+    }
+
+    $scope.editComment = function(comment) {
+        comment.edit = true;
+        comment.oldText = comment.text;
+    }
+
+    $scope.cancelEditComment = function(comment) {
+        comment.edit = false;
+        comment.text = comment.oldText;
+        comment.oldText = undefined;
+    }
+
+    $scope.deleteComment = function(index, comment) {
+        $http.delete('/api/article/' + $routeParams.articleId + "/comment/" + comment._id).success(function() {
+            console.log("comment deleted");
+            $scope.comments.splice(index, 1);
+        });
+    }
+
 });
+
+
+
+

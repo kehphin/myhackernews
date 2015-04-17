@@ -50,13 +50,24 @@
       <tr>
         <th>Username</th>
         <th>Comment</th>
+        <th></th>
         <th>Date</th>
       </tr>
       <tr ng-repeat="comment in comments">
           <td>
             <a ng-href="#/profile/{{comment.poster}}">{{comment.poster}}</a>
           </td>
-          <td>{{comment.text}}</td>
+          <td ng-show="!comment.edit">{{comment.text}}</td>
+          <td>
+            <div ng-show="!comment.edit && currentUser && currentUser.username == comment.poster">
+              <a ng-click="editComment(comment)" class="sort">Edit</a> |
+              <a ng-click="deleteComment($index, comment)" class="sort">Delete</a>
+            </div>
+
+            <textarea ng-model="comment.text" ng-show="comment.edit" class="edit-textarea form-control"></textarea>
+            <button ng-show="comment.edit" class="btn btn-xs btn-success" ng-click="saveComment(comment)">Save</button>
+            <button ng-show="comment.edit" class="btn btn-xs btn-danger" ng-click="cancelEditComment(comment)">Cancel</button>
+          </td>
           <td>{{comment.dateCreated | date:"MM/dd/yyyy 'at' h:mma"}}</td>
       </tr>
   </tbody>
