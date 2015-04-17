@@ -1,12 +1,13 @@
-<h1>MyHackerNews</h1>
+<div class="page-container col-sm-offset-1 col-sm-10">
+<img class="home-logo" src="/img/mhn.png" align="center"/>
 
-<h1 ng-show="!newest">Top 20 HN Articles</h1>
-<h1 ng-show="newest">Newest 20 HN Articles</h1>
 <div class="pull-right">
   Sort by:
-  <a ng-click="sortStories('topstories')" class="sort">Top</a>
+  <a ng-show="newest" ng-click="sortStories('topstories')" class="sort">Top</a>
+  <span ng-show="!newest">Top</span>
   |
-  <a ng-Click="sortStories('newstories')" class="sort">Newest</a>
+  <span ng-show="newest">Newest</span>
+  <a ng-show="!newest" ng-click="sortStories('newstories')" class="sort">Newest</a>
 </div>
 
 <table class="table table-striped" ng-init="init()">
@@ -40,3 +41,4 @@
         </tr>
     </tbody>
   </table>
+  </div>
