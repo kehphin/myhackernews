@@ -477,6 +477,13 @@ app.post("/api/user/:username/favorite/:articleId", function(req, res) {
 	});
 });
 
+//returns a list of the HNIds that the indicated user has favorited
+/* An example response JSON:
+[
+    "9392057",
+    "9392015"
+]
+ */
 app.get("/api/user/:username/favorites", function(req, res) {
 	User.find({username: req.params.username}, {favorites: 1, _id: 0}, function (err, users) {
 		if(err) {
