@@ -514,7 +514,7 @@ app.delete("/api/user/:username/favorite/:articleid", function(req, res) {
 				 return;
 			 } else if(!checkModified(modified, modified.nModified)) {
 				 //if nothing was modified then the articleid was never on the list
-				 res.status(404).end(modified);
+				 res.status(404).end(JSON.stringify(modified));
 				 return;
 			 }
 			 res.status(200).end();
