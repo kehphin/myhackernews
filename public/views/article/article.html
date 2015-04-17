@@ -16,7 +16,10 @@
             <td>{{article.by}}</td>
             <td>{{article.score}}</td>
             <td>
-                <button ng-show="currentUser" ng-click="addToFavorites(article)" class="btn btn-warning">
+                <button ng-show="currentUser && currentUser.favorites.indexOf(article.id.toString()) > -1" ng-click="removeFromFavorites(article)" class="btn btn-danger">
+                    <span class="glyphicon glyphicon-remove"></span>
+                </button>
+                <button ng-show="currentUser && currentUser.favorites.indexOf(article.id.toString()) == -1" ng-click="addToFavorites(article)" class="btn btn-warning">
                     <span class="glyphicon glyphicon-star"></span>
                 </button>
             </td>

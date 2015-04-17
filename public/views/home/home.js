@@ -19,5 +19,7 @@ app.controller("HomeCtrl", function($scope, $http, $location, $rootScope, StoryS
 
   $scope.addToFavorites = function(story) {
     StoryService.addToFavorites(story);
+    $rootScope.currentUser.favorites.push(story.id.toString());
   }
+
 });

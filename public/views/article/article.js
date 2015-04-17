@@ -13,6 +13,10 @@ app.controller('ArticleCtrl', function($scope, $http, $rootScope, $routeParams, 
         $http.get('/api/article/' + $routeParams.articleId + "/usersFavorited").success(function(articleFavorited) {
             $scope.articleFavorited = articleFavorited.users;
         });
+        
+        StoryService.getFavorites().then(function(json) {
+        	$rootScope.currentUser.favorites = json;
+        })
     });
 
     $scope.postComment = function() {
@@ -40,4 +44,16 @@ app.controller('ArticleCtrl', function($scope, $http, $rootScope, $routeParams, 
             $scope.comments.push(commentBody.comment);
         });
     };
+    
+    $scope.addToFavorites = function(article) {
+    	StoryService.addToFavorites(article);
+    	$rootScope.currentUser.favorites.push(article.id.toString());
+    	$scope.articleFavorited.push({username: $rootScope.currentUser.username});
+    }
+    
+    $scope.removeFromFavorites = function(article) {
+    	StoryService.removeFavorite(article.id);
+    	$rootScope.currentUser.favorites.splice($rootScope.currentUser.favorites.indexOf(article.id.toString()), 1);
+    	$scope.articleFavorited.splice($scope.articleFavorited.indexOf($rootScope.currentUser.username), 1);
+    }
 });

@@ -92,17 +92,31 @@ app.factory('StoryService', function StoryService($q, $http, $rootScope) {
         console.log("successfully added to favorites");
       });
     }
+    
+    var removeFavorite = function(id) {
+    	$http.delete('/api/user/' + $rootScope.currentUser.username + "/favorite/" + id)
+        .success(function(users) {
+            console.log("deleted favorited article");
+        });
+    }
 
     var getFavorites = function()
     {
-        return favorites;
+    	var deferred = $q.defer();
+
+        $http.get("/api/user/"+ $rootScope.currentUser.username + "/favorites").success(function(json) {
+          deferred.resolve(json);
+        });
+
+        return deferred.promise;
     }
 
     return {
         getStory: getStory,
         getStories: getStories,
         addToFavorites: addToFavorites,
-        getFavorites: getFavorites
+        getFavorites: getFavorites,
+        removeFavorite: removeFavorite
     };
 });
 

@@ -477,6 +477,19 @@ app.post("/api/user/:username/favorite/:articleId", function(req, res) {
 	});
 });
 
+app.get("/api/user/:username/favorites", function(req, res) {
+	User.find({username: req.params.username}, {favorites: 1, _id: 0}, function (err, users) {
+		if(err) {
+			res.status(500).end();
+			return;			
+		} else if(!users.length) {
+			res.status(404).end();
+			return;
+		}
+		res.json(users[0].favorites);
+	})
+});
+
 //remove a favorite from list of a user
 app.delete("/api/user/:username/favorite/:articleid", function(req, res) {
 	User.update({username: req.params.username},
@@ -513,8 +526,8 @@ app.get("/api/article/:articleid/usersFavorited", function(req, res) {
 		}
 		//return a list of the usernames which have favorited the indicated article
 		res.json({users: users});
-	})
-})
+	});
+});
 
 
 ////////////////////////////////////////////////
