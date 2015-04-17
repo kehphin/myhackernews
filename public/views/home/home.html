@@ -18,19 +18,22 @@
           <th>Points</th>
           <th></th>
         </tr>
-        <tr ng-repeat="story in stories">
+        <tr ng-repeat="article in articles">
             <td>
-              <a ng-href="{{story.url}}">{{story.title}}</a>
+              <a ng-href="{{article.url}}">{{article.title}}</a>
             </td>
             <td>
               <div class="commentLink">
-                <a ng-href="#/article/{{story.id}}">View Comments</a>
+                <a ng-href="#/article/{{article.id}}">View Comments</a>
               </div>
             </td>
-            <td>{{story.by}}</td>
-            <td>{{story.score}}</td>
+            <td>{{article.by}}</td>
+            <td>{{article.score}}</td>
             <td>
-                <button ng-show="currentUser" ng-click="addToFavorites(story)" class="btn btn-warning">
+                <button ng-show="currentUser && currentUser.favorites.indexOf(article.id.toString()) > -1" ng-click="removeFromFavorites(article)" class="btn btn-danger">
+                    <span class="glyphicon glyphicon-remove"></span>
+                </button>
+                <button ng-show="currentUser && currentUser.favorites.indexOf(article.id.toString()) == -1" ng-click="addToFavorites(article)" class="btn btn-warning">
                     <span class="glyphicon glyphicon-star"></span>
                 </button>
             </td>

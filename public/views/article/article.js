@@ -14,9 +14,12 @@ app.controller('ArticleCtrl', function($scope, $http, $rootScope, $routeParams, 
             $scope.articleFavorited = articleFavorited.users;
         });
         
-        StoryService.getFavorites().then(function(json) {
-        	$rootScope.currentUser.favorites = json;
-        })
+
+		if ($rootScope.currentUser) {
+		    StoryService.getFavorites().then(function(json) {
+				$rootScope.currentUser.favorites = json;
+			});
+		}       
     });
 
     $scope.postComment = function() {
