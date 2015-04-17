@@ -1,6 +1,7 @@
 <div class="page-container col-sm-offset-1 col-sm-10">
 <div class="profile-header">
-  <h1>Profile for {{username}}</h1>
+  <h1 ng-show="currentUser.username == username">My Profile</h1>
+  <h1 ng-show="currentUser.username != username">Profile for {{username}}</h1>
 </div>
 <button ng-show="currentUser && currentUser.username != username && followers.indexOf(currentUser.username) == -1" ng-click="followUser()" class="btn btn-sm btn-success follow-btn">
     <span class="glyphicon glyphicon-plus"></span>
@@ -26,7 +27,10 @@
 </ul>
 
 <div ng-show="tabView == 'following-tab'">
-  <h4 ng-show="following.length === 0">{{username}} isn't following anyone.</h4>
+  <h4 ng-show="following.length == 0 && currentUser.username != username">{{username}} isn't following anyone.</h4>
+  <h4 ng-show="following.length == 0 && currentUser.username == username">You aren't following anyone.</h4>
+
+  <h4 ng-show="following.length === 0"></h4>
     <table ng-show="following.length > 0" class="table table-striped">
         <tbody>
             <tr>
@@ -42,7 +46,8 @@
 </div>
 
 <div ng-show="tabView == 'followers-tab'">
-  <h4 ng-show="followers.length === 0">No one is following {{username}}.</h4>
+  <h4 ng-show="followers.length == 0 && currentUser.username != username">No one is following {{username}}.</h4>
+  <h4 ng-show="followers.length == 0 && currentUser.username == username">You don't have any followers yet.</h4>
   <table ng-show="followers.length > 0" class="table table-striped">
         <tbody>
             <tr>
@@ -58,7 +63,8 @@
 </div>
 
 <div ng-show="tabView == 'favorites-tab'">
-    <h3 ng-show="favorites.length == 0">{{username}} hasn't favorited any posts.</h3>
+    <h4 ng-show="favorites.length == 0 && currentUser.username != username">{{username}} hasn't favorited any posts.</h3>
+    <h4 ng-show="favorites.length == 0 && currentUser.username == username">You haven't favorited any posts.</h3>
     <table ng-show="favorites.length > 0" class="table table-striped">
         <tbody>
             <tr >
