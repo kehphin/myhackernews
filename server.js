@@ -572,6 +572,64 @@ app.get("/api/article/:articleid/usersFavorited", function(req, res) {
 	});
 });
 
+//returns a list of articles that are simila to the indicated article by looking at
+//users that have favorited this article and counting the most popular articles
+//favorited by those users
+/* An example response JSON:
+[
+    {
+        "_id": "553097e60aed72881a46fa18",
+        "author": "DiabloD3",
+        "HNId": "9391818",
+        "dateCreated": "1429234605",
+        "title": "Bill Would Legitimize White House Secrecy and Clear the Way for Anti-User Deals",
+        "url": "https://www.eff.org/deeplinks/2015/04/fasttrack-bill-legitimize-white-
+        house-secrecy-and-clear-way-anti-user",
+        "__v": 0
+    },
+    {
+        "_id": "55305ca0c7134d101b7a6c06",
+        "author": "danso",
+        "HNId": "9389452",
+        "dateCreated": "1429205667",
+        "title": "IKEA introduces wireless charging furniture [pdf]",
+        "url": "http://www.ikea.com/ms/en_US/pressroom/press_materials/USA_PR_Wireless_charging.pdf",
+        "__v": 0
+    }
+]
+ */
+app.get("/api/article/:articleid/similarArticles", function(req, res) {
+	User.aggregate([{ $match: { favorites: req.params.articleid}},
+	                { $unwind: "$favorites"},
+	                { $match: { favorites: {$ne: req.params.articleid}}},
+	                { $group : { _id : "$favorites", numFavorites: { $sum : 1}}},
+	                { $sort: {numFavorites: -1}},
+	                { $limit: 5},
+	                { $project: {HNId: "$_id", numFavorites: 1, _id: 0}}],
+	                function(err, HNIds) {
+		if(err) {
+			console.log(err);
+			res.status(500).end();
+			return;
+		}
+		console.log('The result from the aggregation for ' + req.params.articleid +
+				' was: ' + JSON.stringify(HNIds));
+		var idOrder = HNIds.map(function(el) {return el.HNId;});
+		Article.find({HNId: {$in: idOrder}}, function(errs, articles) {
+			if(err) {
+				console.log(err);
+				res.status(500).end();
+				return;
+			}
+			for(var i = 0; i < articles.length; i++) {
+				var article = articles[i];
+				idOrder[idOrder.indexOf(article.HNId)] = article;
+			}
+			res.json(idOrder).end();
+		});
+	});
+});
+
 
 ////////////////////////////////////////////////
 //Comment Endpoints
