@@ -142,20 +142,6 @@ var HackerNews = {
 // REST Endpoints
 // //////////////////////////////////////////////
 
-// General helper for dealing with strange mongo behavior
-// when checking the modified variable
-
-var checkModified = function(modified, subel) {
-    var flag;
-    if (typeof modified  === 'object') {
-        flag = subel;
-    } else {
-        flag = modified;
-    }
-
-    return flag;
-}
-
 // //////////////////////////////////////////////
 // Auth/Session Endpoints
 // //////////////////////////////////////////////
@@ -387,11 +373,7 @@ app.delete("/api/user/:username", auth, function(req, res){
     	if(err) {
     		res.status(500).end();
     		return;
-        //if the delete did not modify the collection in any way then no user matched so send a 404
-    	} else if(!checkModified(user, user.result.n)) {
-    		res.status(404).end();
-    		return;
-    	}
+    	} 
     	res.status(200).end();
     	//now we want to go remove this user from any other user's following list because of the deletion
     	User.update({following: req.params.username},
@@ -447,10 +429,6 @@ app.delete("/api/user/:username/follow/:tounfollow", function(req, res) {
 		     if(err) {
 	    		 res.status(500).end();
 	    		 return;
-	    	 } else if(!checkModified(modified, modified.nModified)) {
-	    		 //if nothing was modified then the tounfollow was never on the list
-	     		 res.status(404).end();
-	     		 return;
 	    	 }
 	    	 res.status(200).end();
     });
@@ -493,11 +471,7 @@ app.post("/api/user/:username/favorite/:articleId", function(req, res) {
 	        if(err) {
 		    	res.status(500).end();
 		    	return;
-            } else if(!checkModified(modified, modified.n)) {
-		        //if nothing was modified then it didn't contain it so return 404
-		    	res.status(404).end();
-		    	return;
-		    }
+            }
 		    res.status(200).end();
 	    });
 	});
@@ -511,10 +485,6 @@ app.delete("/api/user/:username/favorite/:articleid", function(req, res) {
 			    function(err, modified) {
 			 if(err) {
 				 res.status(500).end();
-				 return;
-			 } else if(!checkModified(modified, modified.nModified)) {
-				 //if nothing was modified then the articleid was never on the list
-				 res.status(404).end(JSON.stringify(modified));
 				 return;
 			 }
 			 res.status(200).end();
@@ -642,9 +612,6 @@ app.put("/api/article/:articleid/comment/:commentid", function(req, res) {
 			res.status(500).end();
 			return;
 	    //if nothing was found for the _id then return a 404
-		} else if(!checkModified(comment, comment.n)) {
-			res.status(404).end();
-			return;
 		}
 		res.status(200).end();
 	});
@@ -657,9 +624,6 @@ app.delete("/api/article/:articleid/comment/:commentid", function(req, res) {
 			res.status(500).end();
 			return;
 		//if nothing was removed then return a 404
-		} else if(!checkModified(removed, removed.result.n)) {
-			res.status(404).end();
-			return;
 		}
 		res.status(200).end();
 
