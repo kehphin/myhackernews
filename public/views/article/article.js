@@ -42,11 +42,11 @@ app.controller('ArticleCtrl', function($scope, $http, $rootScope, $routeParams, 
         };
 
         // BROKEN, NEED RETURNED COMMENT ARRAY OR COMMENT
-        $http.post('/api/article/' + $scope.article.id + "/comment", commentBody).success(function() {
+        $http.post('/api/article/' + $scope.article.id + "/comment", commentBody).success(function(comment) {
             console.log("successfully posted comment");
-            commentBody.comment.dateCreated = Date.now();
-            $scope.comments.push(commentBody.comment);
+            $scope.comments.push(comment);
         });
+
         $scope.commentText = '';
     };
 
