@@ -1,15 +1,8 @@
-<h1>Register</h1>
-
-<div class="input-group">
+<div class="auth-container col-sm-offset-4 col-sm-4">
+  <h1 align="center">Register</h1>
   <input type="text" class="form-control" placeholder="Username" ng-model="user.username"/>
-</div>
-<div class="input-group">
   <input type="password" class="form-control" placeholder="Password" ng-model="user.password"/>
-</div>
-<div class="input-group">
   <input type="password" class="form-control" placeholder="Confirm Password" ng-model="user.password2"/>
+  <button class="btn btn-lg btn-warning btn-block" ng-click="register(user)">Register</button>
+  <h4 ng-show="message" align="center">{{message}}</h4>
 </div>
-<button class="btn btn-primary" ng-click="register(user)">Register</button>
-
-{{message}}
-

@@ -2,13 +2,6 @@ body {
   background-color: #fbe8c6;
 }
 
-.login-container {
-  background-color: white;
-  margin-top: 20px;
-  -webkit-box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.20);
-  border-radius: 2px;
-}
-
 .sort {
   cursor: hand;
 }
@@ -31,14 +24,50 @@ body {
   margin-left: 10px;
 }
 
-.login-container {
-  padding: 25px;
+.auth-container {
+  background-color: white;
+  margin-top: 20px;
+  -webkit-box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.20);
+  border-radius: 2px;
+
+  padding-left: 25px;
+  padding-right: 25px;
+  padding-bottom: 25px;
 }
 
-.login-container > input {
+.auth-container > input {
   margin-bottom: 10px;
 }
 
-.login-container > button {
+.auth-container > button {
   margin-top: 30px;
+}
+
+.auth-container > h4 {
+  margin-top: 35px;
+  color: red;
+}
+
+.page-container {
+  background-color: white;
+  margin-top: 20px;
+  -webkit-box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.20);
+  border-radius: 2px;
+}
+
+.profile-tab-container {
+  padding-bottom: 30px;
+}
+
+.home-logo {
+  margin-top: 15px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.currentSort {
+  cursor: mouse;
+  text-decoration: bold;
+  color: black;
 }
