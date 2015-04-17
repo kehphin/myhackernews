@@ -5,7 +5,10 @@ app.controller("HomeCtrl", function($scope, $http, $location, $rootScope, StoryS
     });
     if($rootScope.currentUser) {
         StoryService.getFavorites().then(function(favorites) {
-    	    $scope.currentUser.favorites = favorites;
+        	//need to check again here because sometimes the variable is set to null after the intial check above
+        	if($rootScope.currentUser) {
+    	        $rootScope.currentUser.favorites = favorites;
+        	}
         });
     }
   }

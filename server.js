@@ -458,6 +458,7 @@ app.post("/api/user/:username/favorite/:articleId", function(req, res) {
 		//do not care about the error if it only occurs
 		//because the item already exists, this is fine
 		if(err && err.message.indexOf('duplicate key error') == -1) {
+			console.log(err);
 			res.status(500).end();
 			return;
 		}
@@ -469,6 +470,7 @@ app.post("/api/user/:username/favorite/:articleId", function(req, res) {
 	                function(err, modified) {
 
 	        if(err) {
+	        	console.log(err);
 		    	res.status(500).end();
 		    	return;
             }

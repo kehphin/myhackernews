@@ -104,3 +104,24 @@
       </tr>
   </table>
 </div>
+
+<div>
+  <h2>Similar Users</h2>
+  <h4 ng-show="similarUsers.length === 0">We can't find any similar users.</h4>
+    <table ng-show="similarUsers.length > 0" class="table table-striped">
+        <tbody>
+            <tr>
+              <th>Username</th>
+              <th>Favorites In Common</th>
+            </tr>
+            <tr ng-repeat="user in similarUsers">
+              <td>
+                <a ng-href="#/profile/{{user.username}}">{{user.username}}</a>
+              </td>
+              <td>
+                {{user.similarFavorites}}
+              </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

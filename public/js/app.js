@@ -38,6 +38,8 @@ app.config(function($routeProvider, $httpProvider) {
 app.factory('StoryService', function StoryService($q, $http, $rootScope) {
 
     var favorites = [];
+    
+    var HNUrlBase = 'https://news.ycombinator.com/item?id=';
 
     var getStory = function(id) {
       var deferred = $q.defer();
@@ -66,8 +68,17 @@ app.factory('StoryService', function StoryService($q, $http, $rootScope) {
             if(storyCounter == 20) {
               var storyList = [];
               $.each(json, function(index, storyId) {
-                if (index == 20) return false; // break out of loop after first 20 stories
-                storyList.push(stories[storyId.toString()]);
+                if (index == 20) {
+                	return false; // break out of loop after first 20 stories
+                }
+                var curStory = stories[storyId.toString()];
+                //sometimes a story doesn't have a url so we want the hyperlink to point
+                //to the HN details page for the story
+                if (curStory.url == null || curStory.url == '') {
+                	curStory.url = HNUrlBase + curStory.id;
+                	
+                }
+                storyList.push(curStory);
               });
 
               deferred.resolve(storyList);
