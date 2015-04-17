@@ -13,16 +13,36 @@
 <script src="views/article/article.js"></script>
 <body ng-app="MyHackerNewsApp">
     <div class="container">
-        <nav ng-controller="NavCtrl">
-          <a href="#home">Home</a> |
-          <span ng-show="!currentUser">
-              <a href="#login">Login</a> |
-              <a href="#register">Register</a>
-          </span>
-          <span ng-show="currentUser">
-              <a ng-href="#profile/{{currentUser.username}}">Profile</a> |
-              <a href="#logout" ng-click="logout()">Logout</a>
-          </span>
+        <nav ng-controller="NavCtrl" class="navbar navbar-default">
+        <!-- Brand and toggle get grouped for better mobile display -->
+    		<div class="navbar-header">
+    		  <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#nav-breakdown">
+    		    <span class="sr-only">Toggle navigation</span>
+    		    <span class="icon-bar"></span>
+    		    <span class="icon-bar"></span>
+   		        <span class="icon-bar"></span>
+    	  	  </button>
+     	 	  <a class="navbar-brand" href="">HN</a>
+   			 </div>
+   			 <div class="collapse navbar-collapse" id="nav-breakdown">
+   			   <ul class="nav navbar-nav">
+   			     <li data-toggle="collapse" data-target=".navbar-collapse"><a href="#home">Home</a></li>
+                 <li data-toggle="collapse" data-target=".navbar-collapse" ng-show="!currentUser">
+                     <a href="#register">Register</a>
+                 </li>
+                 <li data-toggle="collapse" data-target=".navbar-collapse" ng-show="currentUser">
+                     <a ng-href="#profile/{{currentUser.username}}">Profile</a>
+                 </li>
+   			   </ul>
+   			   <ul class="nav navbar-nav navbar-right">
+   			       <li data-toggle="collapse" data-target=".navbar-collapse" ng-show="!currentUser">
+                       <a href="#login">Login</a>
+                   </li>
+                   <li data-toggle="collapse" data-target=".navbar-collapse" ng-show="currentUser">
+                       <a href="#logout" ng-click="logout()">Logout</a>
+                   </li>
+   			   </ul>
+          </div>
         </nav>
         <div ng-view>
         </div>
