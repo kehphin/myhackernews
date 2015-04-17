@@ -1,4 +1,4 @@
-<h1>Article</h1>
+<div class="page-container col-sm-offset-1 col-sm-10">
 
 <h1>Details</h1>
 
@@ -36,7 +36,7 @@
     <a ng-click="setArticleTabView('articleFavorited-tab')" class="sort">Favorited By ({{articleFavorited.length}})</a>
   </li>
   <li class="profile-tab similarArticles-tab">
-    <a ng-click="setArticleTabView('similarArticles-tab')" class="sort">Similar Articles ({{similarArticles.length}})</a>
+    <a ng-click="setArticleTabView('similarArticles-tab')" class="sort">Similar Articles</a>
   </li>
 </ul>
 <div ng-show="tabView == 'articleFavorited-tab'">
@@ -115,4 +115,5 @@
             </tr>
         </tbody>
     </table>
+</div>
 </div>
