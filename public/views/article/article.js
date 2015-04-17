@@ -25,10 +25,6 @@ app.controller('ArticleCtrl', function($scope, $http, $rootScope, $routeParams, 
 
 		$http.get('/api/article/' + $routeParams.articleId + '/similarArticles').success(function(similarArticles) {
 			$scope.similarArticles = similarArticles;
-
-            if ($scope.similarArticles.length > 0) {
-                $(".profile-tab-container").addClass("col-md-8");
-            }
 		})
     });
 
@@ -51,7 +47,6 @@ app.controller('ArticleCtrl', function($scope, $http, $rootScope, $routeParams, 
             }
         };
 
-        // BROKEN, NEED RETURNED COMMENT ARRAY OR COMMENT
         $http.post('/api/article/' + $scope.article.id + "/comment", commentBody).success(function(comment) {
             console.log("successfully posted comment");
             $scope.comments.push(comment);

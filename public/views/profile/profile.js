@@ -8,6 +8,17 @@ app.controller('ProfileCtrl', function($scope, $http, $rootScope, $routeParams){
            $scope.following = user.following;
            $scope.followers = user.followers;
         });
+
+        $http.get('/api/user/' + $scope.username + '/similarUsers').success(function(users) {
+            console.log(users);
+            $scope.similarUsers = users;
+
+            if ($scope.similarUsers.length > 0) {
+                $(".profile-tab-container").addClass("col-md-8");
+            }
+        });
+
+
     });
 
     $scope.removeFavorite = function(story, index)
