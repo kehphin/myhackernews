@@ -511,6 +511,40 @@ app.delete("/api/user/:username/favorite/:articleid", function(req, res) {
 	});
 });
 
+//get similar users to the indicated user
+/* An example response JSON:
+[
+    {
+        "similarFavorites": 5,
+        "username": "steph"
+    },
+    {
+        "similarFavorites": 3,
+        "username": "nick"
+    }
+]
+ */
+app.get("/api/user/:username/similarUsers", function(req, res) {
+	User.aggregate([{ $unwind: "$favorites"},
+	                { $group : { _id : "$favorites", favoritedBy: { $addToSet : "$username"}}},
+	                { $match: { favoritedBy: req.params.username}},
+	                { $unwind: "$favoritedBy"},
+	                { $group: { _id: "$favoritedBy", similarFavorites: { $sum: 1}}},
+	                { $match: { _id: {$ne: req.params.username}}},
+	                { $sort: {similarFavorites: -1}},
+	                { $project: {username: "$_id", similarFavorites: 1, _id: 0}}],
+	                function(err, users) {
+		if(err) {
+			console.log(err);
+			res.status(500).end();
+			return;
+		}
+		console.log('The result from the aggregation for ' + req.params.username + 
+				' was: ' + JSON.stringify(users));
+		res.json(users).end();
+	});
+});
+
 //given an article id this will return a list of all users that have favorited the article
 /* An example response JSON:
 {
