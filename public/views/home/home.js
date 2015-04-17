@@ -14,14 +14,14 @@ app.controller("HomeCtrl", function($scope, $http, $location, $rootScope, StoryS
   }
 
   $scope.sortStories = function(sortType) {
+    if (sortType == "topstories") {
+      $scope.newest = false;
+    } else {
+      $scope.newest = true;
+    }
+
     StoryService.getStories(sortType).then(function(article) {
       $scope.articles = article;
-
-      if (sortType == "topstories") {
-        $scope.newest = false;
-      } else {
-        $scope.newest = true;
-      }
     });
   }
 
@@ -29,7 +29,7 @@ app.controller("HomeCtrl", function($scope, $http, $location, $rootScope, StoryS
     StoryService.addToFavorites(article);
     $rootScope.currentUser.favorites.push(article.id.toString());
   }
-  
+
   $scope.removeFromFavorites = function(article) {
   	StoryService.removeFavorite(article.id);
   	$rootScope.currentUser.favorites.splice($rootScope.currentUser.favorites.indexOf(article.id.toString()), 1);
