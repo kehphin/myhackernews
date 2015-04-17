@@ -65,7 +65,7 @@
               </td>
               <td>{{story.author}}</td>
               <td>
-                <button ng-show="currentUser" ng-click="removeFavorite(story, $index)" class="btn btn-danger">
+                <button ng-show="currentUser && currentUser.username == username" ng-click="removeFavorite(story, $index)" class="btn btn-danger">
                     <span class="glyphicon glyphicon-remove"></span>
                 </button>
               </td>
