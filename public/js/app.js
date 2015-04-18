@@ -45,6 +45,9 @@ app.factory('StoryService', function StoryService($q, $http, $rootScope) {
       var deferred = $q.defer();
 
       $http.get("https://hacker-news.firebaseio.com/v0/item/"+ id + ".json").success(function(json) {
+    	  if(json.url == null || json.url == '') {
+    		  json.url = HNUrlBase + json.id;
+    	  }
         deferred.resolve(json);
       });
 
