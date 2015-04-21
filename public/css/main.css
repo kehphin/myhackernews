@@ -37,6 +37,7 @@ body {
 
 .follow-btn {
   margin-top: -19px;
+  margin-left: 10px;
 }
 
 
@@ -99,3 +100,18 @@ th {
 	white-space: nowrap;
 }
 
+@media (max-width: 768px) {
+  .profile-header {
+    display: block;
+  }
+
+  .page-container {
+    padding-top: 1px;
+  }
+
+  .follow-btn {
+    margin-top: 5px;
+    margin-bottom: 17px;
+    margin-left: 0px;
+  }
+}
