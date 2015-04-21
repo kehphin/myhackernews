@@ -17,6 +17,7 @@ body {
 
 .profile-header {
   display: inline-block;
+  margin-bottom: 10px;
 }
 
 .article-header {
@@ -25,7 +26,6 @@ body {
 
 .follow-btn {
   margin-top: -19px;
-  margin-left: 10px;
 }
 
 
