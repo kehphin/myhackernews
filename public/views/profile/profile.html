@@ -30,13 +30,15 @@
     <h4 ng-show="favorites.length == 0 && currentUser.username != username">{{username}} hasn't favorited any posts.</h3>
     <h4 ng-show="favorites.length == 0 && currentUser.username == username">You haven't favorited any posts.</h3>
     <table ng-show="favorites.length > 0" class="table table-striped">
-        <tbody>
+        <thead>
             <tr >
               <th>Title</th>
               <th></th>
               <th>By</th>
               <th></th>
             </tr>
+        </thead>
+        <tbody>
             <tr ng-repeat="story in favorites">
               <td>
               <a ng-href="{{story.url}}">{{story.title}}</a>
@@ -61,10 +63,12 @@
   <h4 ng-show="followers.length == 0 && currentUser.username != username">No one is following {{username}}.</h4>
   <h4 ng-show="followers.length == 0 && currentUser.username == username">You don't have any followers yet.</h4>
   <table ng-show="followers.length > 0" class="table table-striped">
-        <tbody>
+        <thead>
             <tr>
-              <th>Username</th>
+              <th>User</th>
             </tr>
+        </thead>
+        <tbody>
             <tr ng-repeat="user in followers">
               <td>
                 <a ng-href="#/profile/{{user}}">{{user}}</a>
@@ -80,10 +84,12 @@
 
   <h4 ng-show="following.length === 0"></h4>
     <table ng-show="following.length > 0" class="table table-striped">
-        <tbody>
+        <thead>
             <tr>
-              <th>Username</th>
+              <th>User</th>
             </tr>
+        </thead>
+        <tbody>
             <tr ng-repeat="user in following">
               <td>
                 <a ng-href="#/profile/{{user}}">{{user}}</a>
@@ -97,11 +103,13 @@
 <div ng-show="similarUsers.length > 0" class="similar-users col-md-4">
   <h2>Similar Users</h2>
     <table class="table table-striped">
-        <tbody>
+        <thead>
             <tr>
-              <th>Username</th>
-              <th>Favorites In Common</th>
+              <th>User</th>
+              <th>Shared Favorites</th>
             </tr>
+        </thead>
+        <tbody>
             <tr ng-repeat="user in similarUsers">
               <td>
                 <a ng-href="#/profile/{{user.username}}">{{user.username}}</a>

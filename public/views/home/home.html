@@ -11,7 +11,7 @@
 </div>
 
 <table class="table table-striped" ng-init="init()">
-    <tbody>
+    <thead>
         <tr>
           <th>Title</th>
           <th></th>
@@ -19,6 +19,8 @@
           <th>Points</th>
           <th></th>
         </tr>
+    </thead>
+    <tbody>
         <tr ng-repeat="article in articles">
             <td>
               <a ng-href="{{article.url}}">{{article.title}}</a>

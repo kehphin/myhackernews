@@ -5,13 +5,15 @@
 </div>
 
 <table class="table table-striped">
-    <tbody>
+    <thead>
         <tr>
           <th>Title</th>
           <th>By</th>
           <th>Points</th>
           <th></th>
         </tr>
+    </thead>
+    <tbody>
         <tr>
             <td>
               <a ng-href="{{article.url}}">{{article.title}}</a>
@@ -44,10 +46,12 @@
 <div ng-show="tabView == 'articleFavorited-tab'">
 <h3 ng-show="articleFavorited.length == 0">No one has favorited this post.</h3>
 <table ng-show="articleFavorited.length > 0" class="table table-striped">
-  <tbody>
+  <thead>
       <tr>
-        <th>Username</th>
+        <th>User</th>
       </tr>
+  </thead>
+  <tbody>
       <tr ng-repeat="user in articleFavorited">
           <td>
             <a ng-href="#/profile/{{user.username}}">{{user.username}}</a>
@@ -66,13 +70,15 @@
 <h3 ng-show="comments.length == 0">No comments have been posted yet about this article.</h3>
 
 <table ng-show="comments.length > 0" class="table table-striped">
-  <tbody>
+  <thead>
       <tr>
-        <th>Username</th>
+        <th>User</th>
         <th>Comment</th>
         <th></th>
         <th>Date</th>
       </tr>
+  </thead>
+  <tbody>
       <tr ng-repeat="comment in comments">
           <td>
             <a ng-href="#/profile/{{comment.poster}}">{{comment.poster}}</a>
@@ -97,13 +103,15 @@
 <div ng-show="tabView == 'similarArticles-tab'">
     <h3 ng-show="similarArticles.length == 0">We can't find any similar articles at the moment.</h3>
     <table ng-show="similarArticles.length > 0" class="table table-striped">
-        <tbody>
+        <thead>
             <tr >
               <th>Title</th>
               <th></th>
               <th>By</th>
               <th></th>
             </tr>
+        </thead>
+        <tbody>
             <tr ng-repeat="article in similarArticles">
               <td>
               <a ng-href="{{article.url}}">{{article.title}}</a>
