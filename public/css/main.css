@@ -19,10 +19,15 @@ body {
   display: inline-block;
 }
 
+.article-header {
+	display: inline-block;
+}
+
 .follow-btn {
   margin-top: -19px;
   margin-left: 10px;
 }
+
 
 .auth-container {
   background-color: white;
@@ -72,3 +77,9 @@ body {
   text-decoration: bold;
   color: black;
 }
+
+.table {
+	table-layout: fixed;
+	word-wrap: break-word;
+}
+
