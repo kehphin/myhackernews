@@ -15,6 +15,7 @@
         <tr>
           <th>Title</th>
           <th></th>
+          <th></th>
           <th>By</th>
           <th>Points</th>
           <th></th>
@@ -22,7 +23,7 @@
     </thead>
     <tbody>
         <tr ng-repeat="article in articles">
-            <td>
+            <td colspan="2">
               <a ng-href="{{article.url}}">{{article.title}}</a>
             </td>
             <td>

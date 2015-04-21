@@ -34,13 +34,14 @@
             <tr >
               <th>Title</th>
               <th></th>
+              <th></th>
               <th>By</th>
               <th></th>
             </tr>
         </thead>
         <tbody>
             <tr ng-repeat="story in favorites">
-              <td>
+              <td colspan="2" >
               <a ng-href="{{story.url}}">{{story.title}}</a>
               </td>
               <td>

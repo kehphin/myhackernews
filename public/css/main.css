@@ -7,9 +7,20 @@ body {
 }
 
 .commentLink {
-  font-size: 12px;
+  font-size: 11px;
   margin-top: 4px;
 }
+
+@media (max-width: 768px) {
+	.table {
+	  font-size: 12px;
+	}
+	.commentLink {
+	  font-size: 11px;
+	}
+	
+}
+
 
 .similar-users {
   margin-top: -22px;
@@ -83,7 +94,7 @@ body {
 	word-wrap: break-word;
 }
 
-/* prevents table header from wrappping */
+/* prevents table header from wrapping */
 th {
 	white-space: nowrap;
 }
