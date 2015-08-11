@@ -9,6 +9,7 @@ var session       = require('express-session');
 var mongoose      = require('mongoose');
 var https         = require('https');
 var crypto        = require('crypto');
+var MongoStore    = require('connect-mongo')(session);
 
 var connectionString = process.env.OPENSHIFT_MONGODB_DB_URL || 'mongodb://localhost/test';
 var ip = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1';
@@ -74,7 +75,11 @@ app.use(bodyParser.json()); // for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true })); // for parsing
 													// application/x-www-form-urlencoded
 app.use(multer()); // for parsing multipart/form-data
-app.use(session({ secret: 'this is the secret' }));
+app.use(session({ secret: 'this is the secret',
+                  name: 'session_id',
+                  resave: false,
+                  saveUninitialized: false,
+                  store: new MongoStore({ mongooseConnection: mongoose.connection }) }));
 app.use(cookieParser())
 app.use(passport.initialize());
 app.use(passport.session());
@@ -114,11 +119,13 @@ function(username, password, done)
 }));
 
 passport.serializeUser(function(user, done) {
-    done(null, user);
+    done(null, user._id);
 });
 
-passport.deserializeUser(function(user, done) {
-    done(null, user);
+passport.deserializeUser(function(id, done) {
+    return User.findById(id, function (err, user) {
+        return done(err, user);
+    });
 });
 
 var auth = function(req, res, next)

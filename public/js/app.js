@@ -9,10 +9,7 @@ app.config(function($routeProvider, $httpProvider) {
       })
       .when('/profile', {
           templateUrl: 'views/profile/profile.html',
-          controller: 'ProfileCtrl',
-          resolve: {
-              loggedin: checkLoggedin
-          }
+          controller: 'ProfileCtrl'
       })
       .when('/login', {
           templateUrl: 'views/login/login.html',
@@ -133,28 +130,3 @@ app.factory('StoryService', function StoryService($q, $http, $rootScope) {
         removeFavorite: removeFavorite
     };
 });
-
-var checkLoggedin = function($q, $timeout, $http, $location, $rootScope)
-{
-    var deferred = $q.defer();
-
-    $http.get('/api/loggedin').success(function(user)
-    {
-        $rootScope.errorMessage = null;
-        // User is Authenticated
-        if (user !== '0')
-        {
-            $rootScope.currentUser = user;
-            deferred.resolve();
-        }
-        // User is Not Authenticated
-        else
-        {
-            $rootScope.errorMessage = 'You need to log in.';
-            deferred.reject();
-            $location.url('/login');
-        }
-    });
-
-    return deferred.promise;
-};
